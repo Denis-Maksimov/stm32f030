@@ -4,17 +4,19 @@
 *******************************************************************
 + */
     #define RCC_BASE                0x40021000
-    #define RCC_CR  		        0x00
-        #define RCC_CR_HSEON  		0x00010000
-        #define RCC_CR_HSERDY  		0x00020000
-        #define RCC_CR_PLLON  		0x01000000
-        #define RCC_CR_PLLRDY  		0x02000000
-        #define RCC_CR_PLL2ON  		0x04000000
-        #define RCC_CR_PLL2RDY  	0x08000000
-        #define RCC_CR_PLL3ON  		0x10000000
-        #define RCC_CR_PLL3RDY  	0x20000000
-        #define RCC_CR_HSION  		0x0001
-        #define RCC_CR_HSIRDY  		0x0002
+    
+    #define RCC_CR  		        0x00 //reset value 0x00000083
+        #define RCC_CR_HSION  		    0x1<<0
+        #define RCC_CR_HSIRDY  		    0x1<<1
+        #define RCC_CR_HSITRIM_5b(a)    ((a)<<3)
+        #define RCC_CR_HSICALL_8b(a)    ((a)<<8)
+        #define RCC_CR_HSEON  		    0x1<<16
+        #define RCC_CR_HSERDY  		    0x1<<17
+        #define RCC_CR_HSEBYP 		    0x1<<18
+        #define RCC_CR_CSSON 		    0x1<<19
+        #define RCC_CR_PLLON 		    0x1<<24
+        #define RCC_CR_PLLRDY 		    0x1<<25
+
 	#define RCC_CFGR  		        0x04
   	      	#define RCC_CFGR_SW_HSE     0x01
       	  	#define RCC_CFGR_SW_PLL     0x02
@@ -44,8 +46,9 @@
         	#define RCC_CFGR_ADCPRE_6   0x8000
         	#define RCC_CFGR_ADCPRE_8   0xC000
         //
-        	#define RCC_CFGR_PLLSRC     0x10000
-		#define RCC_CFGR_PLLXTPRE   0x20000
+        	#define RCC_CFGR_PLLSRC     0x1<<16 //< 0-HSI/2, 1-HSE
+		#define RCC_CFGR_PLLXTPRE       0x1<<17 //< 0-HSE,   1-HSE/2
+        #define RCC_CFGR_PLLMULx_4b(a)  ((a)<<18)
 		#define RCC_CFGR_PLLMUL4    0x80000
 		#define RCC_CFGR_PLLMUL5    0xc0000
 		#define RCC_CFGR_PLLMUL6    0x100000
@@ -213,9 +216,10 @@
     #define GPIOB 		    0x40010C00
  	#define GPIOC 		    0x40011000 
 
-    #define GPIOx_CRL 		0x00
-    #define GPIOx_CRH       0x04
-	#define GPIOx_ODR 		0x0C
+    #define GPIOx_CRL 		0x00    //<control low register
+    #define GPIOx_CRH       0x04    //<control high register
+    #define GPIOx_IDR       0x08    //<input data register
+	#define GPIOx_ODR 		0x0C    //<output data register
     #define GPIOx_BSRR 	    0x10
     #define GPIOx_BRR 		0x14
 

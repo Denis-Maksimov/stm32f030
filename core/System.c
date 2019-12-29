@@ -46,7 +46,6 @@ void RCC_DeInit(void)
   REGISTER(RCC_BASE|RCC_CR) |= (uint32_t)0x00000001;
 
   /* Reset SW, HPRE, PPRE1, PPRE2, ADCPRE and MCO bits */
-
   REGISTER(RCC_BASE|RCC_CFGR) &= (uint32_t)0xF8FF0000;
 
 

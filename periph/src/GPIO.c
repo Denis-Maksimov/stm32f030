@@ -10,10 +10,10 @@ void GPIO_init(void){
 	    GPIO_c->pin13=PUSH_PULL_OUTPUT_2MHZ;
 	    GPIO_c->pin14=PUSH_PULL_OUTPUT_2MHZ;
 
-        REGISTER(GPIOB|GPIOx_CRL)=0x22222222;//B 0-7 output
+    //    REGISTER(GPIOB|GPIOx_CRL)=0x22222222;//B 0-7 output
     GPIO_c=(GPIOval*)(GPIOB|GPIOx_CRH);
-        GPIO_c->pin8=PUSH_PULL_OUTPUT_2MHZ;
-	    GPIO_c->pin10=PUSH_PULL_OUTPUT_2MHZ;
+        GPIO_c->pin11=HI_Z_INPUT;//echo
+	    GPIO_c->pin10=PUSH_PULL_OUTPUT_50MHZ;//trig
 }
 
 
