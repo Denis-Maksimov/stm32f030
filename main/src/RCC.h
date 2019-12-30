@@ -6,11 +6,11 @@
 // устанавливает внешнее тактирование 72 МГц
 void set_clock_HSE();
 
-// устанавливает внутреннее тактирование 72 МГц
-void set_clock_HSI()
+// устанавливает внутреннее тактирование 8 МГц
+void set_clock_HSI();
 
 // сброс RCC
-void RCC_reset(void)
+void RCC_reset(void);
 
 
 

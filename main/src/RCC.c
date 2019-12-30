@@ -49,8 +49,14 @@
  ***************************************************************************************************/
 
 //-----------------------------------------------------------------
+
+
+//////////////////////////////////////////////////////////////////
+/// FIXME: почему то 36 МГц вместо 72 МГц =((
+//////////////////////////////////////////////////////////////////
  void set_clock_HSE()
 {
+    
     //Если внешний кварц отключен
     if(!(REGISTER(RCC_BASE|RCC_CR)&RCC_CR_HSERDY))
     {
@@ -62,30 +68,44 @@
         }
         
     }
+    /* Reset HSEBYP bit */
+    REGISTER(RCC_BASE|RCC_CR) &= (uint32_t)0xFFFBFFFF;
 
-    //магическое тактирование флеша
-    REGISTER(FLASH_ACR)|=0x10;
-  	REGISTER(FLASH_ACR)&=!0x03;
-  	REGISTER(FLASH_ACR)|=0x02;
+    /**************************************
+     * магическое тактирование флеша
+    ноль циклов ожидания, если 0 < SYSCLK ≤ 24 MHz
+    один цикл ожидания, если 24 MHz < SYSCLK ≤ 48 MHz
+    два цикла ожидания, если 48 MHz < SYSCLK ≤ 72 MHz
+    ***********************************************/
+    REGISTER(FLASH_ACR) |=  0x10;
+  	REGISTER(FLASH_ACR) &= ~0x03;
+  	REGISTER(FLASH_ACR) |=  0x02;
 
 
-    //PLLMULL x9
-    REGISTER(RCC_BASE|RCC_CFGR) &= ~RCC_CFGR_PLLMULx_4b(0xf);
+    //PLLMULL x9 
+    REGISTER(RCC_BASE|RCC_CFGR) &= ~RCC_CFGR_PLLMULx_4b(0xf);//0111
     REGISTER(RCC_BASE|RCC_CFGR) |=  RCC_CFGR_PLLMUL9;
 
 
     //PLLSRC <- PLLXTPRE
+   // REGISTER(RCC_BASE|RCC_CFGR) |=  RCC_CFGR_PLLSRC;
     REGISTER(RCC_BASE|RCC_CFGR) |=  RCC_CFGR_PLLSRC;
-
-
-
     //PLLXTPRE <- HSE
     REGISTER(RCC_BASE|RCC_CFGR) &= ~RCC_CFGR_PLLXTPRE;
 
 
+    //включаем PLL, если не включен
+    if(!(REGISTER(RCC_BASE|RCC_CR)&RCC_CR_PLLRDY)){
+
+        REGISTER(RCC_BASE|RCC_CR) |= RCC_CR_PLLON;
+        while (!(REGISTER(RCC_BASE|RCC_CR)&RCC_CR_PLLRDY));
+    }
+    
+    
     //SW <- PLLx9|PLLSRC << PLLXTPRE << HSE
     REGISTER(RCC_BASE|RCC_CFGR) |= RCC_CFGR_SW_PLL;
     while (!(REGISTER(RCC_BASE|RCC_CFGR) & RCC_CFGR_SWS_PLL));
+    __system_clock = 72000000;
 
  }
 //-----------------------------------------------------------------
@@ -106,11 +126,14 @@
 
     //Перечекаемся на внутренний кварц
     REGISTER(RCC_BASE|RCC_CFGR) &= ~(RCC_CFGR_SW_PLL|RCC_CFGR_SW_HSE);
-    while ((REGISTER(RCC_BASE|RCC_CFGR) & (RCC_CFGR_SWS_PLL|RCC_CFGR_SWS_HSE));
+    while ((REGISTER(RCC_BASE|RCC_CFGR) & (RCC_CFGR_SWS_PLL|RCC_CFGR_SWS_HSE)));
 
  }
 //-----------------------------------------------------------------
 
+/******************************************************************
+ * \brief go RCC registers to starting values
+******************************************************************/
 void RCC_reset(void)
 {
   /* Set HSION bit */
