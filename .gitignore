@@ -1,2 +1,8 @@
 .vscode/
 *.o
+*.bin
+*.elf
+*.pdf
+*.txt
+*.map
+*.list

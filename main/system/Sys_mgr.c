@@ -42,8 +42,17 @@ void hard_fault(){
     }
 }
 
-//--------------------------------------------------- * 
- * same to segmentation fault --------------------
+//---------------------------------------------------
+
+/*********************************************
+ *  \brief Reset the same as with the button 
+ * *******************************************/
+void _RST(void){
+  REGISTER(SCB_Base|SCB_AIRCR)= AIRCR_KEY | AIRCR_SYSRESETREQ;
+}// Reset - как с кнопки
+
+//----------------------------------------------------
+
 
 // big plans
 void thread(void){

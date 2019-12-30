@@ -1,4 +1,6 @@
-#pragma once
+#ifndef STM32_H
+#define STM32_H
+
 /******************************************************************
 **  Reset and clock control (RCC) Register
 *******************************************************************
@@ -49,8 +51,8 @@
         	#define RCC_CFGR_PLLSRC     0x1<<16 //< 0-HSI/2, 1-HSE
 		#define RCC_CFGR_PLLXTPRE       0x1<<17 //< 0-HSE,   1-HSE/2
         #define RCC_CFGR_PLLMULx_4b(a)  ((a)<<18)
-		#define RCC_CFGR_PLLMUL4    0x80000
-		#define RCC_CFGR_PLLMUL5    0xc0000
+		#define RCC_CFGR_PLLMUL4    0x080000
+		#define RCC_CFGR_PLLMUL5    0x0c0000
 		#define RCC_CFGR_PLLMUL6    0x100000
 		#define RCC_CFGR_PLLMUL7    0x140000
 		#define RCC_CFGR_PLLMUL8    0x180000
@@ -384,3 +386,9 @@
 typedef unsigned char uint8_t;
 typedef unsigned int uint32_t;
 typedef unsigned short uint16_t;
+typedef signed char int8_t;
+typedef signed int int32_t;
+typedef signed short int16_t;
+
+unsigned int __system_clock; // <-- переменная для регистрации текущего значения частоты системы
+#endif // !STM32_H
