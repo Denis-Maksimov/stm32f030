@@ -27,7 +27,7 @@ bin: $(FILES)
 
 build.elf: bin boot.o
 		#3 Линкуем
-		arm-none-eabi-ld -o build.elf -T link.ld *.o
+		arm-none-eabi-ld -o build.elf -T link.ld -M *.o
 
 binary.bin: build.elf
 		#4 Извлекаем бинарные данные
@@ -37,7 +37,7 @@ binary.bin: build.elf
 
 upload: binary.bin
 		#Загружаем в МК
-		sudo stm32flash -w binary.bin  -v -g 0x0 /dev/ttyUSB0
+		sudo stm32flash -w binary.bin  -v -g 0x000000000800099c /dev/ttyUSB0
 
 
 
