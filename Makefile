@@ -3,7 +3,7 @@ FOLDERS :=$(shell find . -type d)
 FOLDERS:=$(addprefix -I, $(FOLDERS))
 
 CFLAGS := -nostdlib -nostartfiles -ffreestanding\
-		 -Wall -mcpu=cortex-m3 -march=armv7-m -mthumb  -c\
+		 -Wall -mcpu=cortex-m3 -march=armv7-m -mthumb \
 
 CFLAGS :=$(CFLAGS) $(FOLDERS)
 
@@ -22,18 +22,20 @@ boot.o:	./core/boot.s
 
 bin: $(FILES)
 		#2 компилим
-		arm-none-eabi-gcc $(FILES) $(CFLAGS)
+		arm-none-eabi-gcc $(FILES) $(CFLAGS) -c
 		
 
 build.elf: bin boot.o
 		#3 Линкуем
-		arm-none-eabi-ld -o build.elf -T link.ld -M *.o
+		arm-none-eabi-ld -o build.elf -T link.ld  *.o # -M 
 
 binary.bin: build.elf
 		#4 Извлекаем бинарные данные
 		arm-none-eabi-objcopy build.elf binary.bin -O binary
 		
 		
+dizass: $(FILES)
+		arm-none-eabi-gcc $(FILES) $(CFLAGS) -S
 
 upload: binary.bin
 		#Загружаем в МК

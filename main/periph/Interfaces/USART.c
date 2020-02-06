@@ -2,11 +2,14 @@
 
 void USART_init(void){
     //clock
-    REGISTER(RCC_BASE|RCC_APB2ENR) |= (APB2_USART1)|(APB2_GPIOA)|(APB2_AFIO);
+    REGISTER(RCC_BASE|RCC_APB2ENR) |= (RCC_APB2ENR_USART1EN)|(RCC_APB2ENR_IOPAEN)|(RCC_APB2ENR_AFIOEN);
     //pins
-    GPIOval* GPIO_a=(GPIOval*)(GPIOA|GPIOx_CRH); //GPIOC high's pins select
-	    GPIO_a->pin9=AF_PUSH_PULL_OUTPUT_50MHZ;
-	    GPIO_a->pin10=HI_Z_INPUT;
+ //   GPIOval* GPIO_a=(GPIOval*)(GPIOA|GPIOx_CRH); //GPIOC high's pins select
+
+      pin_init(9,'a',AF_PUSH_PULL_OUTPUT_50MHZ);
+      pin_init(10,'a',HI_Z_INPUT);
+//	    GPIO_a->pin9=AF_PUSH_PULL_OUTPUT_50MHZ;
+//	    GPIO_a->pin10=HI_Z_INPUT;
   //  REGISTER(GPIOA|GPIOx_CRH) &= !0x0FF0;
   //  REGISTER(GPIOA|GPIOx_CRH) |= 0x04B0;
     //usart

@@ -29,7 +29,7 @@ void main(){
 
         char buf[11];
 
-    volatile register int last_time=0;
+//    volatile register int last_time=0;
 	while(1){
 
 

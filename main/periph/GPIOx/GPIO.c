@@ -5,17 +5,72 @@ void GPIO_init(void){
     REGISTER(RCC_BASE|RCC_APB2ENR) |= (RCC_APB2ENR_IOPCEN|RCC_APB2ENR_IOPBEN);
 
     //Настройка пинов
-    GPIOval* GPIO_c=(GPIOval*)(GPIOC|GPIOx_CRH); //GPIOC high's pins select
+    pin_init(13,'C',PUSH_PULL_OUTPUT_2MHZ);
+    pin_init(14,'C',PUSH_PULL_OUTPUT_2MHZ);
+//    GPIOval* GPIO_c=(GPIOval*)(GPIOC|GPIOx_CRH); //GPIOC high's pins select
     
-	    GPIO_c->pin13=PUSH_PULL_OUTPUT_2MHZ;
-	    GPIO_c->pin14=PUSH_PULL_OUTPUT_2MHZ;
+//	    GPIO_c->pin13=PUSH_PULL_OUTPUT_2MHZ;
+//	    GPIO_c->pin14=PUSH_PULL_OUTPUT_2MHZ;
 
     //    REGISTER(GPIOB|GPIOx_CRL)=0x22222222;//B 0-7 output
-    GPIO_c=(GPIOval*)(GPIOB|GPIOx_CRH);
-        GPIO_c->pin11=HI_Z_INPUT;//echo
-	    GPIO_c->pin10=PUSH_PULL_OUTPUT_50MHZ;//trig
+    pin_init(11,'B',HI_Z_INPUT);
+    pin_init(10,'B',PUSH_PULL_OUTPUT_50MHZ);
+ //   GPIO_c=(GPIOval*)(GPIOB|GPIOx_CRH);
+   //     GPIO_c->pin11=HI_Z_INPUT;//echo
+	 //   GPIO_c->pin10=PUSH_PULL_OUTPUT_50MHZ;//trig
 }
 
+void pin_init(uint8_t pin, uint8_t port, enum pin_mode mode){
+    
+    //-- sellect Hi-Low & register offset--
+    if(pin>15)return;
+
+    volatile uint32_t GPIO_base=0;
+    volatile uint32_t _offset=0;
+    uint8_t _pin=pin;
+    if(pin > 7){
+        _offset = GPIOx_CRH;
+        pin=pin-8;
+    }else{
+        _offset = GPIOx_CRL;
+    }
+
+    //-- sellect port & base --
+    switch (port)
+    {
+    case 'A':
+        GPIO_base = (GPIOA);
+        REGISTER(RCC_BASE|RCC_APB2ENR) |= (RCC_APB2ENR_IOPAEN);
+        break;
+    case 'B':
+        GPIO_base = (GPIOB);
+        REGISTER(RCC_BASE|RCC_APB2ENR) |= (RCC_APB2ENR_IOPBEN);
+        break;
+    case 'C':
+        GPIO_base = (GPIOC);
+        REGISTER(RCC_BASE|RCC_APB2ENR) |= (RCC_APB2ENR_IOPCEN);
+        break;
+    default:
+        ///TODO:
+        return;
+    }
+    
+    //-- sellect mode --
+    #define GPIOx_CRx *((volatile uint32_t*)(GPIO_base | _offset))
+    uint32_t mask = 0x0f;
+    mask=(mask<<pin);                                           // set bits mask
+    GPIOx_CRx &= ~mask;                            // clearing bits mask
+    GPIOx_CRx |= ((uint32_t)(mode<<pin)) & mask;   // set mode
+    #undef GPIOx_CRx
+    //-- binding if pull mode --
+    if(mode == INPUT_PULLUP){
+        *((volatile uint32_t*)(GPIO_base + GPIOx_ODR)) |= (0x01<<_pin);
+    }
+    if(mode == INPUT_PULLDOWN){
+        *((volatile uint32_t*)(GPIO_base + GPIOx_ODR)) &= ~((uint32_t)(0x01<<_pin));
+    }
+    return;
+}
 
 
 /*#######################################################

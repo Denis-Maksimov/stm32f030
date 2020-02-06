@@ -6,10 +6,12 @@ void ADC_init(void){
                                       RCC_APB2ENR_IOPAEN;
 
     //Настройка пинов
-    GPIOval* GPIO_a=(GPIOval*)(GPIOA|GPIOx_CRL); //GPIOC low's pins select
+    pin_init(0,'A',ANALOG_INPUT);
+    pin_init(1,'A',ANALOG_INPUT);
+//    GPIOval* GPIO_a=(GPIOval*)(GPIOA|GPIOx_CRL); //GPIOC low's pins select
         
-        GPIO_a->pin0=ANALOG_INPUT;
-        GPIO_a->pin1=ANALOG_INPUT;
+//        GPIO_a->pin0=ANALOG_INPUT;
+//        GPIO_a->pin1=ANALOG_INPUT;
     //конфигрирование АЦП
         //калибровка
         REGISTER(ADC1_BASE|ADC_CR2)|=ADC_CR2_CAL;

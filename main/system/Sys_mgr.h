@@ -1,6 +1,7 @@
 #ifndef SYS_MGR_H
 #define SYS_MGR_H
 #include "stm32.h"
+#include "USART.h"
 int sys_ticks;
 void SysTick_init(int period);
 
