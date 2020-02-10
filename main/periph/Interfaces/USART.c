@@ -1,25 +1,140 @@
 #include "USART.h"
 
-void USART_init(void){
-    //clock
-    REGISTER(RCC_BASE|RCC_APB2ENR) |= (RCC_APB2ENR_USART1EN)|(RCC_APB2ENR_IOPAEN)|(RCC_APB2ENR_AFIOEN);
-    //pins
- //   GPIOval* GPIO_a=(GPIOval*)(GPIOA|GPIOx_CRH); //GPIOC high's pins select
 
-      pin_init(9,'a',AF_PUSH_PULL_OUTPUT_50MHZ);
-      pin_init(10,'a',HI_Z_INPUT);
-//	    GPIO_a->pin9=AF_PUSH_PULL_OUTPUT_50MHZ;
-//	    GPIO_a->pin10=HI_Z_INPUT;
-  //  REGISTER(GPIOA|GPIOx_CRH) &= !0x0FF0;
-  //  REGISTER(GPIOA|GPIOx_CRH) |= 0x04B0;
-    //usart
-  //  REGISTER(USART1|USART_BRR)=0x341;
+
+
+
+//--------------------------------------------------------------
+void USART_DMA_transmit_init(void);
+void USART_init(void){
+
+    //-- clock --
+    REGISTER(RCC_BASE|RCC_APB2ENR) |= (RCC_APB2ENR_USART1EN);
+    REGISTER(RCC_BASE|RCC_AHBENR) |= RCC_AHBENR_DMA1EN;
+    
+    //-- pins --
+    pin_init(9,'A',AF_PUSH_PULL_OUTPUT_50MHZ);
+    pin_init(10,'A',HI_Z_INPUT);
+
+    //-- битрейт --
     REGISTER(USART1|USART_BRR)=0x1d4c;
 
-    REGISTER(USART1|USART_CR1)|=(USART_CR1_UE)| \
-                                (USART_CR1_TE);
+  //-- usart & transmition & receive enable --
+    REGISTER(USART1|USART_CR1) |= (USART_CR1_TE);
+    REGISTER(USART1|USART_CR1) |= (USART_CR1_RE);
+    REGISTER(USART1|USART_CR1) |= (USART_CR1_UE);
 
+    //-- DMA
+    USART_DMA_transmit_init();
+    REGISTER(USART1|USART_CR3) |= (USART_CR2_DMAT); //transmit
+
+    //REGISTER(USART1|USART_CR2) |= (USART_CR2_DMAR); //receive
+
+  
+
+    return;
 }
+
+//--------------------------------------------------------------
+
+void USART_DMA_transmit_init(void){
+
+    REGISTER(DMA1_BASE|DMA_CCR4) &=~ DMA_CCRx_EN;
+    //-- general settings --
+      //periph adr
+      REGISTER(DMA1_BASE|DMA_CPAR4) = (USART1 + USART_DR); 
+      //interrupt
+      // REGISTER(DMA1_BASE|DMA_CCR4) |= DMA_CCRx_TCIE; 
+      //MEM->PERIPH
+      REGISTER(DMA1_BASE|DMA_CCR4) |= DMA_CCRx_DIR; 
+      //reset CYCLiC
+      REGISTER(DMA1_BASE|DMA_CCR4) &= ~(DMA_CCRx_CIRC); 
+
+    //-- perph settings --
+      //increment
+      REGISTER(DMA1_BASE|DMA_CCR4) &= ~(DMA_CCRx_PINC);
+      //size
+      REGISTER(DMA1_BASE|DMA_CCR4) &= ~(DMA_CCRx_PSIZE(0b11));
+      REGISTER(DMA1_BASE|DMA_CCR4) |= DMA_CCRx_PSIZE(PSIZE_8b);
+
+    //-- RAM memory settings --
+    //increment
+    REGISTER(DMA1_BASE|DMA_CCR4) |= DMA_CCRx_MINC;
+    //size
+    REGISTER(DMA1_BASE|DMA_CCR4) &= ~(DMA_CCRx_MSIZE(0b11));
+    REGISTER(DMA1_BASE|DMA_CCR4) |= DMA_CCRx_MSIZE(MSIZE_8b);
+
+    //-- Enable DMA --
+   // REGISTER(DMA1_BASE|DMA_CCR4) |= DMA_CCRx_EN;
+    return;
+}
+
+//--------------------------------------------------------------
+
+int write_DMA_USART(const char* buffer, uint16_t buf_size){
+
+    //-- DMA employment check 
+    if(REGISTER(DMA1_BASE|DMA_CNDTR4)){
+      return 1; 
+    }
+
+    //-- freeze DMA
+    REGISTER(DMA1_BASE|DMA_CCR4) &=~ DMA_CCRx_EN;
+
+      //-- set adress & size bufer
+      REGISTER(DMA1_BASE|DMA_CMAR4) = (uint32_t)buffer;
+      REGISTER(DMA1_BASE|DMA_CNDTR4) = buf_size;
+    
+      //-- clear flag Channel 4 - transfer complete clear
+      REGISTER(DMA1_BASE|DMA_IFCR) |= DMA_IFCR_CTCIF(4);
+
+    //-- resume DMA
+    REGISTER(DMA1_BASE|DMA_CCR4) |= DMA_CCRx_EN;
+
+
+    return 0;
+}
+
+
+//---------------------------------
+
+/*blocking func*/
+void puts(const char* buffer){
+
+    while(write_DMA_USART(buffer, ((uint16_t)(strlen(buffer)))));
+
+    return;
+}
+
+//------------------------------------
+
+void DMA1_Channel4_IRQHandler(){
+  REGISTER(DMA1_BASE|DMA_CCR4) &= ~DMA_CCRx_TCIE; //
+   REGISTER(DMA1_BASE|DMA_IFCR) |= DMA_IFCR_CTCIF(4);
+  USART_sendChr('*');
+
+  return;
+}
+/***** usage *****
+
+int main(){
+
+    USART_init();
+    
+      puts("Hello, world, from DMA!");
+
+    return 0;
+}
+******************/
+
+
+
+
+//--------------------------------------------------------------
+
+/***************************
+ * obsolete code block (using CPU)   *
+***************************/
 
 void USART_sendChr(char Ch){
   //  REGISTER(GPIOC|GPIOx_BRR) = (1<<13);
@@ -29,6 +144,8 @@ void USART_sendChr(char Ch){
     return;
 }
 
+//--------------------------------------------------------------
+
 void USART_sendString(char* STR){
     int i=0;
     while(STR[i]!=0){
@@ -36,6 +153,8 @@ void USART_sendString(char* STR){
         i++;
     }
 }
+
+//--------------------------------------------------------------
 
 int USART_sendStringi(char* STR,int i){
     if(i==0){return i;}
@@ -45,7 +164,7 @@ int USART_sendStringi(char* STR,int i){
     return i+1;
 }
 
-
+//--------------------------------------------------------------
 
 /*
 ~~  Комментарии  ~~

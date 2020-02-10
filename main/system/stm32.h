@@ -463,8 +463,23 @@
 *******************************************************************
 + */
     #define USART1         0x40013800	
-        
+
+    #define USART_SR 		0x00
+        #define USART_SR_PE         0x01
+        #define USART_SR_FE         0x02
+        #define USART_SR_NE         0x04
+        #define USART_SR_ORE        0x08
+        #define USART_SR_IDLE       0x10
+        #define USART_SR_RXNE       0x20
+        #define USART_SR_TC         0x40
+        #define USART_SR_TXE        0x80
+        #define USART_SR_LBD        0x100
+        #define USART_SR_CTS        0x200
+
+    #define USART_DR 		0x04
+
     #define USART_BRR     0x08
+
     #define USART_CR1 	    0x0c
         #define USART_CR1_SBK 	    0x01 //send Brake
         #define USART_CR1_RWU 	    0x02
@@ -481,18 +496,40 @@
         #define USART_CR1_M 	    0x1000 //9-bit
         #define USART_CR1_UE 	    0x2000 //USART enable
 
-	#define USART_SR 		0x00
-        #define USART_SR_PE         0x01
-        #define USART_SR_FE         0x02
-        #define USART_SR_NE         0x04
-        #define USART_SR_ORE        0x08
-        #define USART_SR_IDLE       0x10
-        #define USART_SR_RXNE       0x20
-        #define USART_SR_TC         0x40
-        #define USART_SR_TXE        0x80
-        #define USART_SR_LBD        0x100
-        #define USART_SR_CTS        0x200
-	#define USART_DR 		0x04
+    #define USART_CR2 	    0x10
+        #define USART_CR2_ADD(a) 	((0b1111&a)<<0) //Address of the USART node
+        #define USART_CR2_LBDL 	    (0x01<<5) //lin break detection length 0=10bit 1=11bit
+        #define USART_CR2_LBDIE	    (0x01<<6) // LIN break detection interrupt enable
+        #define USART_CR2_LBCL 	    (0x01<<8) // Last bit clock pulse
+        #define USART_CR2_CPHA 	    (0x01<<9) // Clock phase
+        #define USART_CR2_CPOL 	    (0x01<<10) // Clock polarity
+        #define USART_CR2_CLKEN	    (0x01<<11) // Clock enable
+        #define USART_CR2_STOP(a) 	((0b11&a)<<12) // num of STOP bits
+             #define STOP_1bit      (0b00)
+             #define STOP_0_5bit    (0b01)
+             #define STOP_2bit      (0b10)
+             #define STOP_1_5bit    (0b11)
+
+        #define USART_CR2_LINEN	    (0x01<<14) //LIN mode enable
+
+    #define USART_CR3 	    0x14
+        #define USART_CR2_EIE       (0x01<<0) //Error interrupt enable
+        #define USART_CR2_IREN      (0x01<<1)
+        #define USART_CR2_IRLP      (0x01<<2)
+        #define USART_CR2_HDSEL     (0x01<<3)
+        #define USART_CR2_NACK      (0x01<<4)
+        #define USART_CR2_SCEN      (0x01<<5)
+        #define USART_CR2_DMAR      (0x01<<6) //DMA enable receiver
+        #define USART_CR2_DMAT      (0x01<<7) //DMA enable transmitter
+        #define USART_CR2_RTSE      (0x01<<8)
+        #define USART_CR2_CTSE      (0x01<<9)
+        #define USART_CR2_CTSIE     (0x01<<10)
+
+    #define USART_GTPR 	    0x18        //Guard time and prescaler register 
+        #define USART_GTPR_PSC(a) 	((0xFF & (a))<<0) //Prescaler value
+        #define USART_GTPR_GT(a) 	((0xFF & (a))<<8) //Guard time value
+
+
 /******************************************************************
 ** Serial peripheral interface (SPI) Register
 *******************************************************************
@@ -552,9 +589,9 @@
 *******************************************************************
 + */
 	#define NVIC_base 	0xE000E100
-	#define NVIC_ISER_0 	0x00		
-    #define NVIC_ISER_1 	0x04
-    #define NVIC_ISER_2 	0x08
+	#define NVIC_ISER_0 	0x00		//0-31
+    #define NVIC_ISER_1 	0x04        //32-63
+    #define NVIC_ISER_2 	0x08        //64-95
 	#define NVIC_ICER_0 	0x80		
     #define NVIC_ICER_1 	0x84
     #define NVIC_ICER_2 	0x88
@@ -573,6 +610,83 @@
     /*... */
     //#define NVIC_IPR20      0x320
     #define NVIC_STIR       0xE00
+
+/******************************************************************
+**  Direct memory access DMA
+*******************************************************************
++ */
+    #define DMA1_BASE          0x40020000
+    #define DMA2_BASE          0x40020400
+
+    #define DMA_ISR             0x00
+        #define DMA_ISR_GIF(a)  (0b0001<<a) // Channel x global interrupt flag
+        #define DMA_ISR_TCIF(a) (0b0010<a)  // Channel x transfer complete flag 
+        #define DMA_ISR_HTIF(a) (0b0100<<a) // Channel x half transfer flag
+        #define DMA_ISR_TEIF(a) (0b1000<<a) // Channel x transfer error flag
+
+    #define DMA_IFCR            0x04
+        #define DMA_IFCR_CGIF(a)  (0b0001<<a)
+        #define DMA_IFCR_CTCIF(ch_num) (0b0010<ch_num)
+        #define DMA_IFCR_CHTIF(a) (0b0100<<a)
+        #define DMA_IFCR_CTEIF(a) (0b1000<<a)
+
+
+    #define DMA_CCR1            0x08
+    #define DMA_CNDTR1          0x0C
+    #define DMA_CPAR1           0x10
+    #define DMA_CMAR1           0x14
+
+    #define DMA_CCR2            0x1c
+    #define DMA_CNDTR2          0x20
+    #define DMA_CPAR2           0x24
+    #define DMA_CMAR2           0x28
+
+    #define DMA_CCR3            0x30
+    #define DMA_CNDTR3          0x34
+    #define DMA_CPAR3           0x38
+    #define DMA_CMAR3           0x3c
+
+    #define DMA_CCR4            0x44
+    #define DMA_CNDTR4          0x48
+    #define DMA_CPAR4           0x4c
+    #define DMA_CMAR4           0x50
+    
+    #define DMA_CCR5            0x58
+    #define DMA_CNDTR5          0x5c
+    #define DMA_CPAR5           0x60
+    #define DMA_CMAR5           0x64
+
+    #define DMA_CCR6            0x6c
+    #define DMA_CNDTR6          0x70
+    #define DMA_CPAR6           0x74
+    #define DMA_CMAR6           0x78
+
+    #define DMA_CCR7            0x80
+    #define DMA_CNDTR7          0x84
+    #define DMA_CPAR7           0x88
+    #define DMA_CMAR7           0x8c
+
+    // -- DMA_CCR(0-7) --
+    #define DMA_CCRx_EN     (0X01<<0)
+    #define DMA_CCRx_TCIE   (0X01<<1)
+    #define DMA_CCRx_HTIE   (0X01<<2)
+    #define DMA_CCRx_TEIE   (0X01<<3)
+    #define DMA_CCRx_DIR    (0X01<<4)
+    #define DMA_CCRx_CIRC   (0X01<<5)
+    #define DMA_CCRx_PINC   (0X01<<6)
+    #define DMA_CCRx_MINC   (0X01<<7)
+    #define DMA_CCRx_PSIZE(a)   ((0b11&(a))<<8)
+        #define PSIZE_8b     (0b00)
+        #define PSIZE_16b    (0b01)
+        #define PSIZE_32b    (0b10)
+        
+    #define DMA_CCRx_MSIZE(a)   ((0b11&(a))<<10)
+        #define MSIZE_8b     (0b00)
+        #define MSIZE_16b    (0b01)
+        #define MSIZE_32b    (0b10)
+        
+    #define DMA_CCRx_PL(a)      ((0b11&(a))<<12) //PRIORITY LVL
+    #define DMA_CCRx_MEM2MEM   (0X01<<14)
 
 /******************************************************************
 **  Analog-Digital converse I/O Register

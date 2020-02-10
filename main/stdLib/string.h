@@ -9,9 +9,9 @@
  * conversion integer to ASCII
  * \return pointer of array ASCII 
 **********************************/
-void* itoa(int integer);
+//void* itoa(int integer);
 
-//faster itoa
+// conversion integer --> to string 
 void intToStr(int integer,char* baf); 
 
 /* Return the length of S.  */

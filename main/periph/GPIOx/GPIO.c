@@ -2,8 +2,8 @@
 
 void GPIO_init(void){
     //Даёшь тактирование!
-    REGISTER(RCC_BASE|RCC_APB2ENR) |= (RCC_APB2ENR_IOPCEN|RCC_APB2ENR_IOPBEN);
-
+//    REGISTER(RCC_BASE|RCC_APB2ENR) |= (RCC_APB2ENR_IOPCEN|RCC_APB2ENR_IOPBEN);
+//    REGISTER(GPIOC|GPIOx_CRH)=0x22222222;//B 0-7 output
     //Настройка пинов
     pin_init(13,'C',PUSH_PULL_OUTPUT_2MHZ);
     pin_init(14,'C',PUSH_PULL_OUTPUT_2MHZ);
@@ -58,16 +58,22 @@ void pin_init(uint8_t pin, uint8_t port, enum pin_mode mode){
     //-- sellect mode --
     #define GPIOx_CRx *((volatile uint32_t*)(GPIO_base | _offset))
     uint32_t mask = 0x0f;
-    mask=(mask<<pin);                                           // set bits mask
-    GPIOx_CRx &= ~mask;                            // clearing bits mask
-    GPIOx_CRx |= ((uint32_t)(mode<<pin)) & mask;   // set mode
+    //mask=(mask<<pin);                                           // set bits mask
+    GPIOx_CRx &= ~(mask<<(pin*4));                            // clearing bits mask
+    GPIOx_CRx |= (uint32_t)((mode & mask)<<(pin*4));   // set mode
     #undef GPIOx_CRx
+
     //-- binding if pull mode --
     if(mode == INPUT_PULLUP){
         *((volatile uint32_t*)(GPIO_base + GPIOx_ODR)) |= (0x01<<_pin);
     }
     if(mode == INPUT_PULLDOWN){
         *((volatile uint32_t*)(GPIO_base + GPIOx_ODR)) &= ~((uint32_t)(0x01<<_pin));
+    }
+
+    // -- Clock for Alternete Function
+    if( ( mode>=10 )&&( mode<=15 ) ){
+        REGISTER(RCC_BASE|RCC_APB2ENR) |= RCC_APB2ENR_AFIOEN;
     }
     return;
 }

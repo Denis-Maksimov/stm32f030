@@ -36,7 +36,7 @@ void hard_fault(){
          //  wait(150000);
         for(volatile int i=0;i<15000;i++);
 
-        REGISTER(GPIOC|GPIOx_ODR) ^= (1<<14);
+        REGISTER(GPIOC|GPIOx_ODR) ^= (1<<13);
 
         USART_sendString("Hard Fault!");
     }

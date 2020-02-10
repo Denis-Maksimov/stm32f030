@@ -51,7 +51,7 @@ void* itoa(int integer){
         }
 
 
-        char* ret_buf=(char*)malloc(i_max+1);
+        char* ret_buf=(char*)u_malloc(i_max+1);
 
 		//разворачиваем массив и убираем лишние нули
         for(int i=0;i<i_max+1;i++){

@@ -3,33 +3,34 @@
 #include "stm32.h"
 
 enum pin_mode {
-    ANALOG_INPUT=0x0,
-    HI_Z_INPUT=0x4,
-    PULL_INPUT=0x8,
-    INPUT_PULLDOWN=0x28, ///<--!!!only for pin_init();!!!
-    INPUT_PULLUP=0x18,   ///<--!!!only for pin_init();!!!
+    //- input
+    ANALOG_INPUT    = 0b0000,
+    HI_Z_INPUT      = 0b0100,
+    PULL_INPUT      = 0b1000,
+    INPUT_PULLDOWN  = 0x28, ///<--!!!only for pin_init();!!!
+    INPUT_PULLUP    = 0x18,   ///<--!!!only for pin_init();!!!
     
+    //-- Output --
+    PUSH_PULL_OUTPUT_2MHZ   = 0b0010,
+    PUSH_PULL_OUTPUT_10MHZ  = 0b0001,
+    PUSH_PULL_OUTPUT_50MHZ  = 0b0011,
 
-    PUSH_PULL_OUTPUT_2MHZ=0x2,
-    PUSH_PULL_OUTPUT_10MHZ=0x1,
-    PUSH_PULL_OUTPUT_50MHZ=0x3,
+    OPEN_DRAIN_OUTPUT_2MHZ  = 0b0110,
+    OPEN_DRAIN_OUTPUT_10MHZ = 0b0101,
+    OPEN_DRAIN_OUTPUT_50MHZ = 0b0111,
 
-    OPEN_DRAIN_OUTPUT_2MHZ=0x6,
-    OPEN_DRAIN_OUTPUT_10MHZ=0x5,
-    OPEN_DRAIN_OUTPUT_50MHZ=0x7,
+    //-- AFIO --
+    AF_PUSH_PULL_OUTPUT_2MHZ    = 0b1010,
+    AF_PUSH_PULL_OUTPUT_10MHZ   = 0b1001,
+    AF_PUSH_PULL_OUTPUT_50MHZ   = 0b1011,
 
-    AF_PUSH_PULL_OUTPUT_2MHZ=0xA,
-    AF_PUSH_PULL_OUTPUT_10MHZ=0x9,
-    AF_PUSH_PULL_OUTPUT_50MHZ=0xB,
-
-    AF_OPEN_DRAIN_OUTPUT_2MHZ=0xE,
-    AF_OPEN_DRAIN_OUTPUT_10MHZ=0xD,
-    AF_OPEN_DRAIN_OUTPUT_50MHZ=0xF,
+    AF_OPEN_DRAIN_OUTPUT_2MHZ   = 0b1110,
+    AF_OPEN_DRAIN_OUTPUT_10MHZ  = 0b1101,
+    AF_OPEN_DRAIN_OUTPUT_50MHZ  = 0b1111,
 };
 
 
-
-
+//#define x (0b1101);
 
 
 // typedef union tagGPIOval{
