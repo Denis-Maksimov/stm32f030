@@ -111,30 +111,136 @@ int strlen (const char *__s){
 }
 
 //----------------------------------------------------------
-
+/*****************************************************
+ *  Используется алгоритм Бойера-Мура	             *
+ * ------------------------------------------------- */
 /* Find the first occurrence of NEEDLE in HAYSTACK.  */
-char *strstr (const char *__haystack, const char *__needle){
-	///TODO:
-	return 0;
+char* strstr(const char* __haystack, const char* __needle){
+    
+    int len = strlen(__needle); //длина запроса
+    char* end_adress = (char*)(len + (size_t)__needle); //адрес конца
+    char* table =(char*) u_malloc(len); //table
+    
+
+    //======================
+    //--1) Составляем таблицу --
+	//======================
+    for (int i=1; i<=len;i++){
+        
+        //-- Присваиваем позицию последнего вхождения
+        table[len-i] = end_adress - strrchr(__needle, __needle[len-i]);
+
+        //-- исключение завершающий символ:
+        if (table[len-i]==0){
+
+			//-- если такой символ есть, то присваеваем ему его индекс
+            if(strrevchr(__needle+len-1,len-1,__needle[len-i])) 
+			{
+                table[len-i] = end_adress - strrevchr(__needle+len-1,len-1,__needle[len-i]);
+			} 
+			 //-- иначе равным длинне строки
+			 else 
+			{
+                table[len-i]=len;
+			}
+
+		}
+    }// = Таблица готова =
+
+    //======================
+    //--2) поиск в строке
+	//======================
+    int counter=len;                  // <- начинаем с конца слова
+    int text_len=strlen(__haystack);  // инициализация длинны массива, в котором ищем
+    char* tmp_res=0;
+
+    while(counter<=text_len){
+
+        //-- Проверяем, нашли ли мы то, что искали
+        if(strncmp(__haystack+counter-len, __needle, len)==0)
+        {   
+            u_free (table);
+            return (char*)((size_t)__haystack+counter-len);
+        }
+        //-- если нет, то уточнаем, есть ли такой символ в поисковом запросе
+        tmp_res = strchr(__needle, __haystack[counter]);
+        if(tmp_res){
+
+            //-- если есть, то ищем индекс в таблице, и ищем уже на индексном расстоянии от места поиска
+            counter += (table[(tmp_res-__needle)]);
+  
+            
+        }else{
+			//-- иначе можно пропустить слово и искать на расстояни len
+            counter=counter+len;
+        }
+        
+    }
+    //-- если не нашли, то возвращаем указатель на нуль
+    u_free (table);
+    return 0;
+    
+}
+
+
+//-------------------------------------------------------
+
+
+//обратный поиск
+char* strrevchr(const char* line, int len , const char chr){
+    line= line - len;
+    
+    int i=len;
+    while(i>0){
+        if (line[i-len]==chr)return (char*)((size_t)line+i-len);
+        i--;
+    }
+    return 0;
 }
 
 //----------------------------------------------------------
 
 /* Find the first occurrence of C in S.  */
-char *strchr (char *__s, char __c){
+char* strchr (const char *__s, const char __c){
 	for(int i=0;i<strlen(__s);i++){
-		if(__s[i]==__c) return __s + i;
+		if(__s[i]==__c) return (char*)((size_t)__s + i);
 	}
 	return 0;
 }
 
+//----------------------------------------------------------
 
+/* Find the last occurrence of C in S.  */
+char *strrchr(const char *__s, const char __c){
+	for(int i=strlen(__s);i>=0;i--){
+		if(__s[i]==__c) return (char*)((size_t)__s + i);
+	}
+	return 0;
 
+}
 
+//-----------------------------------------------------------
 
+/* Compare N characters of S1 and S2.  */
+size_t strncmp(const char* __str1, const char* __str2, size_t __n){
 
+	for(int i; i < __n; i++)
+	{
+		if(__str1[i]!=__str2[i])
+		{
+			return (__str1[i] - __str2[i]);
+		}
+
+	}
+	return 0;
+
+}
 
 // -----------------------------------------------------------------
+
+
+
+
 /* Чёрная магия с просторов хабра, красиво, как по мне
 u8 CountOnes3 (u8 n) {
   if (n == 0)  return 0;  // Единственный случай, когда ответ 0.

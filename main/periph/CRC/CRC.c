@@ -37,10 +37,11 @@ uint32_t crc32_native(char *bfr, int len, int clear){
         break;
     
     default:
+        return 0;
         break;
     }
 
-    return 0xFFFFFFFF ^ crc;
+    return (0xFFFFFFFF ^ crc);
     
 }
 
