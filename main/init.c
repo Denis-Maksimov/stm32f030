@@ -19,6 +19,6 @@ void init(void){
     GPIO_init(); 		//Настройка пинов
     set_clock_HSE(); // arbeitung--???
     NVIC_init();
-    SysTick_init(400000);//100 000
+    SysTick_init(1000000);//100 000
 
 }

@@ -1,7 +1,7 @@
 #ifndef RCC_H
 
 #include "stm32.h"
- #define FLASH_ACR 0x40022000
+// #define FLASH_ACR 0x40022000
 
 // устанавливает внешнее тактирование 72 МГц
 void set_clock_HSE();

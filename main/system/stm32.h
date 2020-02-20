@@ -25,6 +25,17 @@
         	#define RCC_CFGR_SWS_HSE    0x04
         	#define RCC_CFGR_SWS_PLL    0x08
         //AHB
+            #define RCC_CFGR_AHBPREx(a) (((a)&0b1111)<<4)
+                #define AHBPRE_1    0b0000
+                #define AHBPRE_2    0b1000
+                #define AHBPRE_4    0b1001
+                #define AHBPRE_8    0b1010
+                #define AHBPRE_16    0b1011
+                #define AHBPRE_64    0b1100
+                #define AHBPRE_128    0b1101
+                #define AHBPRE_256    0b1110
+                #define AHBPRE_512    0b1111
+
         	#define RCC_CFGR_AHBPRE_2   0x80
         	#define RCC_CFGR_AHBPRE_4   0x90
         	#define RCC_CFGR_AHBPRE_8   0xA0
@@ -50,7 +61,7 @@
         //
         	#define RCC_CFGR_PLLSRC     0x1<<16 //< 0-HSI/2, 1-HSE
 		#define RCC_CFGR_PLLXTPRE       0x1<<17 //< 0-HSE,   1-HSE/2
-        #define RCC_CFGR_PLLMULx_4b(a)  ((a)<<18)
+        #define RCC_CFGR_PLLMULx(a)  (((a)&0b1111)<<18)
 		#define RCC_CFGR_PLLMUL4    0x080000
 		#define RCC_CFGR_PLLMUL5    0x0c0000
 		#define RCC_CFGR_PLLMUL6    0x100000
@@ -58,6 +69,22 @@
 		#define RCC_CFGR_PLLMUL8    0x180000
 		#define RCC_CFGR_PLLMUL9    0x1c0000
 		#define RCC_CFGR_PLLMUL6_5  0x240000
+        #define PLLMULL_2           0b0000
+        #define PLLMULL_3           0b0001
+        #define PLLMULL_4           0b0010
+        #define PLLMULL_5           0b0011
+        #define PLLMULL_6           0b0100
+        #define PLLMULL_7           0b0101
+        #define PLLMULL_8           0b0110
+        #define PLLMULL_9           0b0111
+        #define PLLMULL_10          0b1000
+        #define PLLMULL_11          0b1001
+        #define PLLMULL_12          0b1010
+        #define PLLMULL_13          0b1011
+        #define PLLMULL_14          0b1100
+        #define PLLMULL_15          0b1101
+        #define PLLMULL_16          0b1110
+
 
 	#define RCC_CFGR2  	    0x2C
 	#define RCC_CIR 		0x08
@@ -117,6 +144,82 @@
         #define RCC_APB1_PWREN       (0x01<<28)
         #define RCC_APB1_DAC         (0x01<<29)
 
+/******************************************************************
+**  Flash memory interface registers
+*******************************************************************
++ */
+    #define FLASH_base          0x40022000
+   
+    #define FLASH_ACR           0x00                    // Flash access control register 
+        #define FLASH_ACR_LATENCY(a)   ((0b111&a)<<0)   // These bits represent the ratio of the SYSCLK (system clock) period to the Flash access time
+            #define LATENCY_0           0b000           // Zero wait state, if 0 < SYSCLK≤  24  MHz
+            #define LATENCY_1           0b001           // One wait state, if 24 MHz < SYSCLK ≤  48  MHz
+            #define LATENCY_2           0b010           // Two wait states, if 48 MHz < SYSCLK ≤ 72 MHz
+        #define FLASH_ACR_HLFCYA        (0x01<<3)       // Flash half cycle access enable
+        #define FLASH_ACR_PRFTBE        (0x01<<4)       // Prefetch buffer enable
+        #define FLASH_ACR_PRFTBS        (0x01<<5)       // Prefetch buffer status
+        
+    #define FLASH_KEYR          0x04                    // These register represent the keys to unlock the FPEC
+    
+    #define FLASH_OPTKEYR       0x08                    // These register represent the keys to unlock the OPTWRE.
+   
+    #define FLASH_SR            0x0C                    // Flash status register
+        #define FLASH_SR_BSY            (0x01<<0)       // This indicates that a Flash operation is in progress
+        #define FLASH_SR_PGERR          (0x01<<2)       // Set by hardware when an address to be programmed contains a value different from '0xFFFF' before programming
+        #define FLASH_SR_WRPRTERR       (0x01<<4)       // Set by hardware when programming a write-protected address of the Flash memory.
+        #define FLASH_SR_EOP            (0x01<<5)       // Set by hardware when a Flash operation (programming / erase) is completed.
+    
+    #define FLASH_CR            0x10
+        #define FLASH_CR_PG             (0x01<<0)       // Flash programming chosen.
+        #define FLASH_CR_PER            (0x01<<1)       // Page erase.
+        #define FLASH_CR_MER            (0x01<<2)       // Erase of all user pages chosen.
+        #define FLASH_CR_OPTPG          (0x01<<4)       // Option byte programming chosen.
+        #define FLASH_CR_OPTER          (0x01<<5)       // Option byte erase
+        #define FLASH_CR_START          (0x01<<6)       // This bit triggers an ERASE operation when set. This bit is set only by software and reset when the BSY bit is reset.
+        #define FLASH_CR_LOCK           (0x01<<7)       // Write to 1 only. When it is set, it indicates that the FPEC and FLASH_CR are locked. This bit is reset by hardware after detecting the unlock sequence.In the event of unsuccessful unlock operation, this bit remains set until the next reset.
+        #define FLASH_CR_OPTWRE         (0x01<<9)       // When set, the option bytes can be programmed. This bit is set on writing the correct key sequence to the FLASH_OPTKEYR register.
+        #define FLASH_CR_ERRIE          (0x01<<10)      // This bit enables the interrupt generation on an FPEC error (when PGERR / WRPRTERR are set in the FLASH_SR register)
+        #define FLASH_CR_EOPIE          (0x01<<12)      // This bit enables the interrupt generation when the EOP bit in the FLASH_SR register goes to 1.
+
+    #define FLASH_AR            0x14                    // Chooses the address to program when programming is selected, or a page to erase when Page Erase is selected.Note:   Write access to this register is blocked when the BSY bit in the FLASH_SR register is set
+    
+    #define FLASH_OBR           0x1C                    // Option byte register
+        #define FLASH_OBR_OPTERR        (0x01<<0)       // Option byte error
+        #define FLASH_OBR_RDPRT         (0x01<<1)       // Read protection
+        #define FLASH_OBR_USER(a)   ((0b11111111&a)<<2) // This contains the user option byte loaded by the OBL.
+            #define USER_WDG_SW         0b001
+            #define USER_nRST_STOP      0b010
+            #define USER_nRST_STDBY     0b100
+
+        #define FLASH_OBR_DATA0(a)   ((0b11111111&a)<<10)
+        #define FLASH_OBR_DATA1(a)   ((0b11111111&a)<<18)
+    ///::TODO::
+
+    
+    #define FLASH_WRPR          0x20                    // Write protection register 
+
+/******************************************************************
+**  Information block
+*******************************************************************
++ */
+    #define SYS_MEM_BASE        0x1FFFF000
+    
+    #define OPTION_BYTES_1        0x1FFFF800
+        #define OPTION_BYTES_1_RDP(a)          ((0b11111111&a)<<0)
+        #define OPTION_BYTES_1_nRDP(a)         ((0b11111111&a)<<8)
+        #define OPTION_BYTES_1_WDG_SW           (0x01<<16)
+        #define OPTION_BYTES_1_nRST_STOP        (0x01<<17)
+        #define OPTION_BYTES_1_nRST_STDBY       (0x01<<18)
+        #define OPTION_BYTES_1_USER(a)         ((0b11111111&a)<<16)
+        #define OPTION_BYTES_1_nUSER(a)        ((0b11111111&a)<<24)
+    #define OPTION_BYTES_2        0x1FFFF804 // Datax
+        #define OPTION_BYTES_2_DATA0(a)          ((0b11111111&a)<<0)
+        #define OPTION_BYTES_2_nDATA0(a)         ((0b11111111&a)<<8)
+        #define OPTION_BYTES_2_DATA1(a)         ((0b11111111&a)<<16)
+        #define OPTION_BYTES_2_nDATA1(a)        ((0b11111111&a)<<24)
+    #define OPTION_BYTES_3(n,w)        (0x1FFFF808+n*4+w) // Flash memory write protection option bytes n=0 for w=0,1 & n=1 for wrp=2,3 ;Write-protects pages 0 to 31
+
+    
 /******************************************************************
 **  CRC calculation unit
 *******************************************************************
@@ -539,6 +642,13 @@
     #define SPI_CR1    0x00
     #define SPI_CR2    0x04
     #define SPI_SR     0x08
+    #define SPI_DR     0x0C
+    #define SPI_CRCPR     0x10
+    #define SPI_RXCRCR     0x14
+    #define SPI_TXCRCR     0x14
+    #define SPI_I2SCFGR     0x1C
+    #define SPI_I2SPR     0x14
+
 /******************************************************************
 ** Inter-integrated circuit interface (i2c) Register
 *******************************************************************
@@ -547,32 +657,54 @@
     #define I2C1  0x40005400
     #define I2C2  0x40005800
     #define I2C_CR1    0x00
-        #define I2C_CR1_PE          0x01
-        #define I2C_CR1_SMBUS       0x02
-        #define I2C_CR1_SMBTYPE     0x08
-        #define I2C_CR1_ENARP       0x10
-        #define I2C_CR1_ENPEC       0x20
-        #define I2C_CR1_ENGC        0x40
-        #define I2C_CR1_NOSTRETCH   0x80
-        #define I2C_CR1_START       0x100
-        #define I2C_CR1_STOP        0x200
-        #define I2C_CR1_ACK         0x400
-        #define I2C_CR1_POS         0x800
-        #define I2C_CR1_PEC         0x1000
-        #define I2C_CR1_ALERT       0x2000
-        #define I2C_CR1_SWRST       0x8000
+        #define I2C_CR1_PE          (0x01<<0)
+        #define I2C_CR1_SMBUS       (0x01<<1)   // 1-SMBus mode; 0-I2C mode
+        #define I2C_CR1_SMBTYPE     (0x01<<3)
+        #define I2C_CR1_ENARP       (0x01<<4)
+        #define I2C_CR1_ENPEC       (0x01<<5)
+        #define I2C_CR1_ENGC        (0x01<<6)
+        #define I2C_CR1_NOSTRETCH   (0x01<<7)
+        #define I2C_CR1_START       (0x01<<8)
+        #define I2C_CR1_STOP        (0x01<<9)
+        #define I2C_CR1_ACK         (0x01<<10)
+        #define I2C_CR1_POS         (0x01<<11)
+        #define I2C_CR1_PEC         (0x01<<12)
+        #define I2C_CR1_ALERT       (0x01<<13)
+        #define I2C_CR1_SWRST       (0x01<<15)
 
     #define I2C_CR2    0x04
-        #define I2C_CR2_FREQ        0x3F
+        #define I2C_CR2_FREQ(a)      ((0b111111&a)<<0) //The FREQ bits must be configured with the APB clock frequency value (I2C peripheral connected to APB). The FREQ field is used by the peripheral to generate data setup and hold times compliant with the I2C specifications. The minimum allowed frequency is 2 MHz, the maximum frequency is limited by the maximum APB frequency and cannot exceed 50 MHz (peripheral intrinsic maximum limit)
+        #define I2C_CR2_ITERREN       (0x01<<8)        //Error interrupt enable
+        #define I2C_CR2_ITEVTEN       (0x01<<9)        //Event interrupt enable
+        #define I2C_CR2_ITBUFEN       (0x01<<10)       //Buffer interrupt enable
+        #define I2C_CR2_DMAEN         (0x01<<11)       // DMA requests enable
+        #define I2C_CR2_LAST          (0X01<<12)       //DMA last transfer
 
-    #define I2C_OAR1   0x08
+    #define I2C_OAR1   0x08     // I2C Own address register 1
+        #define I2C_OAR1_ADD7        ((0xFE&a)<<1)
+        #define I2C_OAR1_ADD10        ((0x3FF&a)<<0)
+        #define I2C_OAR1_ADDMODE      (0X01<<15)    // 0-7bit slave addres / 1-10bit slave adress
+
     #define I2C_OAR2   0x0c
+        #define I2C_OAR2_ENDUAL     (0x01<<0) //Dual addressing mode enable
+        #define I2C_OAR2_ADD2        ((0xFE&a)<<1) //Interface address in dual mode
+
     #define I2C_DR     0x10
     #define I2C_SR1    0x14
-        #define I2C_SR1_SB          0x01
-        #define I2C_SR1_ADDR        0x02
-        #define I2C_SR1_BTF         0x04
-        #define I2C_SR1_TXE         0x80
+        #define I2C_SR1_SB          0x01        //Start bit (Master mode)
+        #define I2C_SR1_ADDR        0x02        //Address sent (master mode)/matched (slave mode)
+        #define I2C_SR1_BTF         0x04        //Byte transfer finished
+        #define I2C_SR1_ADD10      (0x01<<3)   // 10-bit header sent (Master mode)
+        #define I2C_SR1_STOPF      (0x01<<4)   //Stop detection (slave mode)
+        #define I2C_SR1_RxNE       (0x01<<6)    //Data register not empty (receivers)
+        #define I2C_SR1_TxE        (0x01<<7)    // Data register empty (transmitters)
+        #define I2C_SR1_BERR       (0x01<<8)    // Bus error
+        #define I2C_SR1_ARLO       (0x01<<9)    //Arbitration lost (master mode)
+        #define I2C_SR1_AF         (0x01<<10)   //Acknowledge failure
+        #define I2C_SR1_OVR         (0x01<<11)  //Overrun/Underrun
+        #define I2C_SR1_PECERR      (0x01<<12)  //PEC error in reception
+        #define I2C_SR1_TIMEOUT     (0x01<<14)  //Timeout or Tlow error
+        #define I2C_SR1_SMBALERT    (0x01<<15)  //SMBus alert 
 
     #define I2C_SR2    0x18
     #define I2C_CCR    0x1c

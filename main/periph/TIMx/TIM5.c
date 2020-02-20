@@ -45,11 +45,6 @@ void TIM5_encoder_interface_mode(struct Encoder_mode_settings* cfg){
     //15.3.12 !!!
 
     //INPUT_FLOATING
- //   GPIOval* GPIO_a=(GPIOval*)(GPIOA|GPIOx_CRH);
- //   GPIO_a->pin13=HI_Z_INPUT;
-    //REGISTER(GPIOA|GPIOx_ODR) |= (0x01<<13); //pull up
-    //void pin_init(uint8_t pin, uint8_t port, enum pin_mode mode);
-
 
     //-- setting pins --
     pin_init(cfg->TI1_pin,cfg->TI1_port,HI_Z_INPUT);

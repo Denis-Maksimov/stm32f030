@@ -44,6 +44,7 @@ typedef unsigned int size_t;
 void* u_malloc(int _size);
 //void* calloc(int _size);
 void u_free(void* pointer);
+void* u_realloc(void* ptr, int size);
 
 /* Set N bytes of S to C.  */
 void* u_memset (char *__s, int __c, uint32_t __n);

@@ -3,11 +3,21 @@
 FOLDERS :=$(shell find . -type d)
 FOLDERS:=$(addprefix -I, $(FOLDERS))
 
-CFLAGS := -nostdlib -nostartfiles -ffreestanding\
-		 -Wall -mcpu=cortex-m3 -march=armv7-m -mthumb -O2
+# Flags
+CFLAGS := -nostdlib 
+CFLAGS += -nostartfiles 
+CFLAGS += -ffreestanding
+CFLAGS += -Wall
+CFLAGS += -mcpu=cortex-m3 
+CFLAGS += -march=armv7-m
+CFLAGS += -mthumb
+CFLAGS += -O2
+#CFLAGS += -mfloat-abi=soft
 
+#includes dirs
 CFLAGS :=$(CFLAGS) $(FOLDERS)
 
+#find all C-files
 FILES :=$(shell find . -name '*.c')
 OBJ:=$(patsubst %.c, %.o,$(FILES))
 

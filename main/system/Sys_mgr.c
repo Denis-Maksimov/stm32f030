@@ -1,15 +1,9 @@
 #include "Sys_mgr.h"
 //-----------------------------------------------------------------------
 
-void SysTick_Handler(void){
 
-    sys_ticks++;
- //   *sys_ticks=(*sys_ticks)+1;
-    REGISTER(GPIOC|GPIOx_ODR) ^= (1<<13);
-    while (!(REGISTER(SysTick_BASE|SysTick_CTRL)&SysTick_COUNTFLAG));
-    return;
-}
 //-----------------------------------------------------------------------
+
 void SysTick_init(int period){
     ///TODO: check sys clock
 
@@ -18,18 +12,14 @@ void SysTick_init(int period){
     asm("cpsie i");
 
 }
+
 //-----------------------------------------------------------------------
+
+
 /************************************************
  * \brief Hard Fault handler
- * Сюда мы свалимся, если обратимся к несуществующему региону
- * памяти, или прыгнем не в ту степь (в неисполняемую память)
- * к примеру:
+ * Тяжёлая ошибка, к примеру "Segmentation fault"
  * 
- * ldr r0, =RCC_BASE   //load in register r0 value 0x40021000
- * bx  r0              //branch to addres in register r0
- * <HARD FAULT!!>
- * 
- * или что-то ещё с камнем произойдёт
 *************************************************/
 void hard_fault(){
     while(1){
@@ -44,6 +34,9 @@ void hard_fault(){
 
 //---------------------------------------------------
 
+
+
+
 /*********************************************
  *  \brief Reset the same as with the button 
  * *******************************************/
@@ -51,16 +44,75 @@ void _RST(void){
   REGISTER(SCB_Base|SCB_AIRCR)= AIRCR_KEY | AIRCR_SYSRESETREQ;
 }// Reset - как с кнопки
 
+
+//----------------------------------------------------
+
+#define U_THREAD_TIMEOUT 200
+int desv[];
+int desc;
+
+// TODO: Это ещё пока не работает
+void SysTick_Handler(void){
+     volatile void* stack_ptr=0;
+     __asm__ volatile( 
+       "//-- Assembly inline --	\n\
+	mrs psp,r0;		\n\
+	movs r0,[%0];		\n\
+	//-- End of inline -- "
+	   :"=r"(stack_ptr)  // --> выход 
+	   :"r"(stack_ptr)   // <-- вход
+	   :"r0" );
+
+    sys_ticks++;
+    REGISTER(GPIOC|GPIOx_ODR) ^= (1<<13);
+    while (!(REGISTER(SysTick_BASE|SysTick_CTRL)&SysTick_COUNTFLAG));
+    
+    /***********
+     * Меняем контекст, тааак... надо подумать как
+     * 1) нужно сохранить контекст прерванного потока
+     * 2) загрузить контекст следующего потока
+     *
+     *
+     * *******/
+
+    return;
+}
+
+int u_thread_create(u_thread_t* tid, u_thread_attr_t attr, void* (*thread_handler)(void*), void* argv ){
+	
+	
+
+	
+	return 0; //-->success
+}
+
 //----------------------------------------------------
 
 
-// big plans
-void thread(void){
-    ///TODO:
-}
+void u_thread_exit(void);
+
+
+//----------------------------------------------------
+
+
+void u_thread_join(void);
+
+
+//----------------------------------------------------
+
+
 void mutex_lock(void){
     ///TODO:
 }
+
+
+//----------------------------------------------------
+
+
 void mutex_unlock(void){
     ///TODO:   
 }
+
+
+//----------------------------------------------------
+

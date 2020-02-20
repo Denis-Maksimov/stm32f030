@@ -59,8 +59,12 @@ enum pin_mode {
 //    	};
 // }GPIOval;
 
+//--------------------------------------------------------
+
 //Настройка пинов old manual verse
 void GPIO_init(void); 
+
+//--------------------------------------------------------
 
 //'auto' setup pin
 /// \arg 
@@ -68,4 +72,9 @@ void GPIO_init(void);
 ///    @port: - character of port 'A', 'B' or 'C'
 ///    @mode: - enum definition of mode pin
 void pin_init(uint8_t pin, uint8_t port, enum pin_mode mode);
+
+//--------------------------------------------------------
+int digital_read(uint8_t pin, uint8_t port);
+//--------------------------------------------------------
+
 #endif // !GPIO_H

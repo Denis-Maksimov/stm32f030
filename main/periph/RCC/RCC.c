@@ -50,10 +50,6 @@
 
 //-----------------------------------------------------------------
 
-
-//////////////////////////////////////////////////////////////////
-/// FIXME: почему то 36 МГц вместо 72 МГц =((
-//////////////////////////////////////////////////////////////////
  void set_clock_HSE()
 {
     
@@ -77,21 +73,21 @@
     один цикл ожидания, если 24 MHz < SYSCLK ≤ 48 MHz
     два цикла ожидания, если 48 MHz < SYSCLK ≤ 72 MHz
     ***********************************************/
-    REGISTER(FLASH_ACR) |=  0x10;
-  	REGISTER(FLASH_ACR) &= ~0x03;
-  	REGISTER(FLASH_ACR) |=  0x02;
-
+    
+  	REGISTER(FLASH_base|FLASH_ACR) &= ~(FLASH_ACR_LATENCY(0x03));
+  	REGISTER(FLASH_base|FLASH_ACR) |=  FLASH_ACR_LATENCY(LATENCY_2);
+    REGISTER(FLASH_base|FLASH_ACR) |=  FLASH_ACR_PRFTBE;
 
     //PLLMULL x9 
-    REGISTER(RCC_BASE|RCC_CFGR) &= ~RCC_CFGR_PLLMULx_4b(0xf);//0111
-    REGISTER(RCC_BASE|RCC_CFGR) |=  RCC_CFGR_PLLMUL9;
+    REGISTER(RCC_BASE|RCC_CFGR) &= ~RCC_CFGR_PLLMULx(0xf);//0111
+    REGISTER(RCC_BASE|RCC_CFGR) |=  RCC_CFGR_PLLMULx(PLLMULL_9);
 
 
     //PLLSRC <- PLLXTPRE
    // REGISTER(RCC_BASE|RCC_CFGR) |=  RCC_CFGR_PLLSRC;
     REGISTER(RCC_BASE|RCC_CFGR) |=  RCC_CFGR_PLLSRC;
     //PLLXTPRE <- HSE
-    REGISTER(RCC_BASE|RCC_CFGR) &= ~RCC_CFGR_PLLXTPRE;
+    REGISTER(RCC_BASE|RCC_CFGR) &= ~(RCC_CFGR_PLLXTPRE);
 
 
     //включаем PLL, если не включен
@@ -100,7 +96,9 @@
         REGISTER(RCC_BASE|RCC_CR) |= RCC_CR_PLLON;
         while (!(REGISTER(RCC_BASE|RCC_CR)&RCC_CR_PLLRDY));
     }
-    
+
+    // AHB/1    
+    REGISTER(RCC_BASE|RCC_CFGR) &= ~(RCC_CFGR_AHBPREx(0b1111));
     
     //SW <- PLLx9|PLLSRC << PLLXTPRE << HSE
     REGISTER(RCC_BASE|RCC_CFGR) |= RCC_CFGR_SW_PLL;
@@ -108,7 +106,9 @@
     __system_clock = 72000000;
 
  }
+
 //-----------------------------------------------------------------
+
  void set_clock_HSI()
  {
      //Если внутренний кварц отключен

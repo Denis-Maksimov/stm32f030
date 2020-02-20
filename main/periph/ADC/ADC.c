@@ -2,8 +2,7 @@
 
 void ADC_init(void){
     //Даёшь тактирование!
-    REGISTER(RCC_BASE|RCC_APB2ENR) |= RCC_APB2ENR_ADC1EN |  \
-                                      RCC_APB2ENR_IOPAEN;
+    REGISTER(RCC_BASE|RCC_APB2ENR) |= RCC_APB2ENR_ADC1EN;
 
     //Настройка пинов
     pin_init(0,'A',ANALOG_INPUT);

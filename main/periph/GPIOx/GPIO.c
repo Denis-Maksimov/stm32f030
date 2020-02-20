@@ -78,7 +78,32 @@ void pin_init(uint8_t pin, uint8_t port, enum pin_mode mode){
     return;
 }
 
+int digital_read(uint8_t pin, uint8_t port){
+    //-- sellect port & base --
+    volatile uint32_t GPIO_base=0;
+    switch (port)
+    {
+    
+    case 'A':
+        GPIO_base = (GPIOA);
+        REGISTER(RCC_BASE|RCC_APB2ENR) |= (RCC_APB2ENR_IOPAEN);
+        break;
+    case 'B':
+        GPIO_base = (GPIOB);
+        REGISTER(RCC_BASE|RCC_APB2ENR) |= (RCC_APB2ENR_IOPBEN);
+        break;
+    case 'C':
+        GPIO_base = (GPIOC);
+        REGISTER(RCC_BASE|RCC_APB2ENR) |= (RCC_APB2ENR_IOPCEN);
+        break;
+    default:
+        ///TODO:
+        return -1;
 
+
+    }
+    return (REGISTER(GPIO_base + GPIOx_IDR))>>pin;
+}
 /*#######################################################
 *************  шпаргалка по настройке  ******************
 #########################################################

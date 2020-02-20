@@ -192,6 +192,14 @@ void u_free(void* pointer){
     
 }
 //---------------------------------------------------------------
+
+void* u_realloc(void* ptr, int size){
+    u_free(ptr);
+    ptr = u_malloc(size);
+    return ptr;
+}
+
+//---------------------------------------------------------------
 /* Set N bytes of S to C.  */
 void* u_memset (char *__s, int __c, uint32_t __n){
     for (int i=0; i<__n; i++){

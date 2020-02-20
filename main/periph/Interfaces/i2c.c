@@ -1,59 +1,83 @@
 #include "i2c.h"
+#include "GPIO.h"
 #define OWN_ADDRES 0x46
 
 void i2c_init(void){
-    //clock
-    REGISTER(RCC_BASE|RCC_APB2ENR) |= (RCC_APB2ENR_IOPBEN);
-    REGISTER(RCC_BASE|RCC_APB1ENR) |= (RCC_APB1_I2C1EN);
-    //pins
-    REGISTER(GPIOB|GPIOx_CRL) |= 0xFF000000;
+	int periph_clock = 8;  // Тактирование перефирии i2c
+	int freq_SCL = 100;    // частота частоты синхроимпульсов SCL i2c в кГц
 
-    //i2c
-    //настраиваем модуль в режим I2C
-    REGISTER(I2C1|I2C_CR1)&= ~I2C_CR1_SMBUS;
-    //указываем частоту тактирования модуля
-    REGISTER(I2C1|I2C_CR2)&= ~I2C_CR2_FREQ;
-	REGISTER(I2C1|I2C_CR2)|= 42; // Fclk1=168/4=42MHz 
-	//конфигурируем I2C, standart mode, 100 KHz duty cycle 1/2	
-    REGISTER(I2C1|I2C_CCR)&= ~(I2C_CCR_FS | I2C_CCR_DUTY);
-    //Придумываем себе адрес 1-7 биты
-    REGISTER(I2C1|I2C_OAR1)= OWN_ADDRES;
-    //задаем частоту работы модуля SCL по формуле 10 000nS/(2* TPCLK1) 
-	REGISTER(I2C1|I2C_CCR) |= 208; //10 000ns/48ns = 208
-    //Standart_Mode = 1000nS, Fast_Mode = 300nS, 1/42MHz = 24nS
-	REGISTER(I2C1|I2C_TRISE) = 42; //(1000nS/24nS)+1
-    //включаем модуль
-    REGISTER(I2C1|I2C_CR1)&= ~I2C_CR1_SMBUS;
+
+    //-- clock
+        REGISTER(RCC_BASE|RCC_APB1ENR) |= (RCC_APB1_I2C1EN);
+
+    //-- pins
+	pin_init(6,'B',AF_OPEN_DRAIN_OUTPUT_10MHZ);	//SCL
+	pin_init(7,'B',AF_OPEN_DRAIN_OUTPUT_10MHZ);	//SDA
+
+    //-- i2c
+        //настраиваем модуль в режим I2C
+        REGISTER(I2C1|I2C_CR1)&= ~I2C_CR1_SMBUS;
+
+	
+    //-- указываем частоту тактирования модуля
+        REGISTER(I2C1|I2C_CR2) &= ~I2C_CR2_FREQ(0b111111); //clear mask
+	REGISTER(I2C1|I2C_CR2) |= I2C_CR2_FREQ(periph_clock); // Fclk1=168/4=42MHz 
+
+    //-- конфигурируем I2C, standart mode, 100 KHz duty cycle 1/2	
+        REGISTER(I2C1|I2C_CCR)&= ~(I2C_CCR_FS | I2C_CCR_DUTY);
+
+    //-- Придумываем себе адрес 1-7 биты
+        REGISTER(I2C1|I2C_OAR1)= OWN_ADDRES;
+
+    //-- задаем частоту работы модуля SCL по формуле T_SCL /(2* T_PCLK1) 
+	REGISTER(I2C1|I2C_CCR) |= (periph_clock*1000)/(2*freq_SCL); //10 000ns/48ns = 208
+
+	/*
+	Для правильной работы необходимо задать в “тактах” частоты тактирования модуля
+	максимально возможное время установления, 
+	по спецификации для стандартного режима максимальное время равно 1000 нс.
+	Период тактовой частоты равен (1 / [APB clock] МГц) [нс], 
+	следовательно время максимальное нарастания:
+	1000kHz/[1000/APB clock(MHz)]+1    --> Standart_Mode
+	300/[APB clock]+1 	  --> Fast_Mode
+	*/
+	REGISTER(I2C1|I2C_TRISE) = periph_clock+1;
+	
+    //-- включаем модуль
+        REGISTER(I2C1|I2C_CR1) |= I2C_CR1_PE;
 
 }
 
+//------------------------------------------------
 
-void I2C_Write(uint8_t reg_addr, uint8_t* data)
+void I2C_Write(uint8_t _addr, uint8_t* data, uint8_t __n)
 {
-        //стартуем
-        REGISTER(I2C1|I2C_CR1) |= I2C_CR1_START;		
-	while(!(REGISTER(I2C1|I2C_SR1) & I2C_SR1_SB));
-	//(void) I2C2->SR1;
-	REGISTER(I2C1|I2C_SR1)=0;
+	//--- формируем бит-сигнал "старт"
+	REGISTER(I2C1|I2C_CR1) |= I2C_CR1_START;
+		
+		while(!(REGISTER(I2C1|I2C_SR1) & I2C_SR1_SB)); //тупим пока отправится
+		REGISTER(I2C1|I2C_SR1)=0;					   //clear status
 
-        //передаем адрес устройства
-	REGISTER(I2C1|I2C_DR) = OWN_ADDRES;
-	while(!(REGISTER(I2C1|I2C_SR1) & I2C_SR1_ADDR));
-    REGISTER(I2C1|I2C_SR1)=0;	//(void) I2C2->SR1;
-    REGISTER(I2C1|I2C_SR2)=0;	//(void) I2C2->SR2;
+    //--- передаем адрес устройства
+	REGISTER(I2C1|I2C_DR) = _addr;
+		while(!(REGISTER(I2C1|I2C_SR1) & I2C_SR1_ADDR));
+		REGISTER(I2C1|I2C_SR1)=0;	//(void) I2C2->SR1;
+		REGISTER(I2C1|I2C_SR2)=0;	//(void) I2C2->SR2;
 
-        //передаем адрес регистра
-	REGISTER(I2C1|I2C_DR) = (uint32_t)reg_addr;	
-	while(!(REGISTER(I2C1|I2C_SR1)& I2C_SR1_TXE));	
+    // //--- передаем адрес регистра
+	// REGISTER(I2C1|I2C_DR) = (uint32_t)reg_addr;	
+	// 	while(!(REGISTER(I2C1|I2C_SR1)& I2C_SR1_TxE));	
 			
-        //пишем данные	
-	int i=0;
-	while(data[i]!=0){
+    //--- пишем данные	
+	for (int i = 0; i < __n; i++)
+	{
 		REGISTER(I2C1|I2C_DR) = data[i];					// отослали в регистр
 		while(!(REGISTER(I2C1|I2C_SR1) & I2C_SR1_BTF));	// подождали отправки байта
 	}
+	
 		//стоп бит
 	REGISTER(I2C1|I2C_CR1) |= I2C_CR1_STOP;		
+
 }
 /*
 uint8_t I2C_Read(uint8_t reg_addr)
@@ -95,6 +119,14 @@ uint8_t I2C_Read(uint8_t reg_addr)
 	return data;	
 } 	
 */
+
+void i2c_slave_Tx_mode(){}
+void i2c_slave_Rx_mode(){}
+void i2c_master_Tx_mode(){}
+void i2c_master_Rx_mode(){}
+
+
+
 
 /*#######################################################
 *************  шпаргалка по настройке  ******************

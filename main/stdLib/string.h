@@ -33,5 +33,5 @@ size_t strncmp(const char* str1, const char* str2, size_t len);
 /* Find the last occurrence of C in S.  */
 char* strrchr(const char* __s, const char __c);
 
-
+void intToHex(unsigned int integer,char* baf);
 #endif // !STRING_H
