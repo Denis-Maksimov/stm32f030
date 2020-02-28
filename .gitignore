@@ -6,3 +6,5 @@
 *.txt
 *.map
 *.list
+*.swo
+*.swp

@@ -241,6 +241,17 @@
     #define SCB_Base 		0xE000ED00
     #define SCB_CPUID       0x00 //The CPUID register contains the processor part number, version, and implementation information.
     #define SCB_ICSR        0x04 //Interrupt control and state register
+        #define SCB_ICSR_VECTACTIVE(a)          ((0x1FF&a)<<0)
+        #define SCB_ICSR_RETOBASE               (0x1<<11)
+        #define SCB_ICSR_ECTPENDING(a)          ((0x1FF&a)<<12)
+        #define SCB_ICSR_ISRPENDING             (0x1<<22)
+        #define SCB_ICSR_PENDSTCLR             (0x1<<25) //SysTick exception clear-pending bit.
+        #define SCB_ICSR_PENDSTSET             (0x1<<26) //SysTick exception set-pending bit
+        #define SCB_ICSR_PENDSVCLR             (0x1<<27) //PendSV clear-pending bit.
+        #define SCB_ICSR_PENDSVSET             (0x1<<28) //PendSV set-pending bit.
+        #define SCB_ICSR_NMIPENDSET             (0x1<<31) //NMI set-pending bit.
+
+
 
     #define SCB_VTOR 		0x08//Vector table offset register
     #define SCB_SCR         0x10//System control register
@@ -255,7 +266,19 @@
     #define SCB_SHCSR      0x24 //System handler control and state register
 
     #define SCB_HFSR        0x2C //HFSR Configurable fault status register
+        #define SCB_HFSR_VECTTBL    (0x01<<1)   //: Vector table hard fault
+        #define SCB_HFSR_FORCED     (0x01<<30)  //Forced hard fault
+        
 	#define SCB_CFSR        0x28 //CFSR Configurable fault status register
+        //-- MMFSR
+        ///TODO:
+        //-- BFSR
+        #define SCB_CFSR_IBUSERR        (0x01<<8)       //Instruction bus error
+        #define SCB_CFSR_PRECISERR      (0x01<<9)       //Precise data bus errorWhen
+        #define SCB_CFSR_IMPRECISERR    (0x01<<10)      //Imprecise data bus error
+        #define SCB_CFSR_UNSTKERR       (0x01<<11)      //Bus fault on unstacking for a return from exception
+        #define SCB_CFSR_STKERR         (0x01<<12)      //Bus fault on stacking for exception entry
+
 	#define SCB_BFAR        0x38 //BFAR - адрес точного отказа
 	#define SCB_DFSR        0x30 //DFSR
     #define SCB_SCB_MMFAR   0x34 //Memory management fault address register

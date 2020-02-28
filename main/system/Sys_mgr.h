@@ -2,9 +2,12 @@
 #define SYS_MGR_H
 #include "stm32.h"
 #include "USART.h"
+#include "stdlib.h"
+uint32_t handle_reg1;
+uint32_t handle_reg2;
 int sys_ticks;
 void SysTick_init(int period);
-
+void main_switcher();
 
 
 ///TODO:
@@ -36,8 +39,12 @@ void u_thread_join(void);
 
 void mutex_lock(void);
 void mutex_unlock(void);
+//-------------------------
+uint32_t get_MSP(void);
+uint32_t get_PSP(void);
+void shin();
 
 
-
+uint32_t save_ctx();
 #endif // !SYS_MGR_H
 
