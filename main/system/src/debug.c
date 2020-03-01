@@ -30,3 +30,13 @@ void debug(int adress){
 
         u_free(bufferr);
 }
+
+void print(int digit)
+{
+        char* bufferr=(char*)u_malloc(9);
+        intToHex(digit,bufferr);
+        puts("0x");
+        puts(bufferr);
+        puts("\r\n");
+        u_free(bufferr);
+}

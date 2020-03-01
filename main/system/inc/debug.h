@@ -6,5 +6,5 @@
 
 //выводит на экран 4 байта
 void debug(int adress);
-
+void print(int digit);
 #endif // !MY_DEBUG
