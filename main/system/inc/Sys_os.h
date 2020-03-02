@@ -56,18 +56,25 @@ typedef struct{
 #define THREAD_STACK_BEGIN      0x20004000
 #define THREAD_STACK_SIZE       128
 struct{
-    uint32_t freq;          // TODO
+    uint8_t n_tasks;         //0
     uint32_t active_tasks;  // .. 0 0 0 1 0 1 1 ..
-    uint32_t current_task;
+    uint8_t current_task;
     u_thread_attr_t* task_attribs[32];
 } sys_tasks;
 
 u_thread_attr_t* get_attribs(uint32_t pid) __attribute__( ( naked ) );
 uint32_t get_active_tasks();
 uint32_t get_current_task();
-void increment_task() __attribute__( ( naked ) );
-u_thread_t task_create( void(*thread_handler)(void), u_thread_attr_t* attribs  );
-int stack_alloc(u_thread_attr_t* attribs);
+
+void thread_create( void(*thread_handler)(void) );
+
+void yield();
+void task_mgr( );
+void os_delay(uint32_t cycles);
+
+// void increment_task() __attribute__( ( naked ) );
+// u_thread_t task_create( void(*thread_handler)(void), u_thread_attr_t* attribs  );
+// int stack_alloc(u_thread_attr_t* attribs);
 
 
 
