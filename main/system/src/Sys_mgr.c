@@ -35,7 +35,7 @@ void _RST(void){
 void SysTick_Handler(void){
 
 
-    sys_ticks++;
+    sys_tasks.ticks++;
     REGISTER(GPIOC|GPIOx_ODR) ^= (1<<13);
     while (!(REGISTER(SysTick_BASE|SysTick_CTRL)&SysTick_COUNTFLAG));
     

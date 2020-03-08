@@ -11,7 +11,7 @@
 #include "debug.h"
 #include "Sys_mgr.h"
 #include "Sys_os.h"
-int sys_ticks;
+
 
 void SysTick_init(int period);
 

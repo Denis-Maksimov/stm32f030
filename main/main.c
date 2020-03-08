@@ -46,7 +46,7 @@ void main_switcher(){
   while(1)
   {     
        
-        puts("oh, ja-ja!!! noch!\r\n");
+        puts("\r\noh, ja-ja!!! noch!");
          os_delay(25);
    //     asm volatile("wfi");
   }
@@ -59,8 +59,8 @@ void task1()
 {
   while(1)
   {
-    puts("yeah, baby! its work!!\r\n");
-    os_delay(20);
+    puts("\r\nyeah, baby! its work!!");
+    os_delay(9);
 //    asm volatile("wfi");
   }
 }
@@ -82,7 +82,9 @@ void main(){
 
 	while(1){
 
-          puts("hi of before stack:\r\n");		
+        puts("\r\nticks: ");
+        print(sys_tasks.ticks);
+          		
         os_delay(19);
         //asm("wfi");
         }

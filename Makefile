@@ -12,6 +12,7 @@ CFLAGS += -mcpu=cortex-m3
 CFLAGS += -march=armv7-m
 CFLAGS += -mthumb
 CFLAGS += -O2
+CFLAGS += -D__MY_BARE_ARM__
 #CFLAGS += -mfloat-abi=soft
 
 #includes dirs

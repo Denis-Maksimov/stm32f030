@@ -56,6 +56,7 @@ typedef struct{
 #define THREAD_STACK_BEGIN      0x20004000
 #define THREAD_STACK_SIZE       128
 struct{
+    uint32_t ticks;
     uint8_t n_tasks;         //0
     uint32_t active_tasks;  // .. 0 0 0 1 0 1 1 ..
     uint8_t current_task;
