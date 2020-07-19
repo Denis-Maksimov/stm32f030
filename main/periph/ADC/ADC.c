@@ -43,7 +43,7 @@ void ADC_start_conversion(void){
 }
 void ADC_read(void){
     char baf[11]={0};
-    intToStr((REGISTER(ADC1_BASE|ADC_DR)),baf);
+    u_intToStr((REGISTER(ADC1_BASE|ADC_DR)),baf);
     USART_sendString(baf);
     return ;
 }

@@ -2,7 +2,7 @@
 #define USART_H
 #include "stm32.h"
 #include "GPIO.h"
-#include "string.h"
+#include "u_string.h"
 
 void USART_init(void);
 int write_DMA_USART(const char* buffer, uint16_t buf_size);

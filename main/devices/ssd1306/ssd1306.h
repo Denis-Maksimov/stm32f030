@@ -1,6 +1,6 @@
 
 #include "i2c.h"
-#include "stdlib.h"
+#include "u_stdlib.h"
 
 #define SSD1306_ADDR_READ   0b01111001
 #define SSD1306_ADDR_WRITE  0b01111000

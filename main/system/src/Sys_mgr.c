@@ -79,8 +79,8 @@ void PendSV_Handler(void)
         ://"r"(_msp)
         : "r4","r5","r6","r7"           
     ); 
-    sys_tasks.task_attribs[sys_tasks.current_task]->hw_sp=_msp; 
-    sys_tasks.task_attribs[sys_tasks.current_task]->sw_sp=_soft_sp; 
+    sys_tasks.task_attribs[sys_tasks.current_task]->hw_sp=(void*)_msp; 
+    sys_tasks.task_attribs[sys_tasks.current_task]->sw_sp=(void*)_soft_sp; 
     //--!Save context
   //  puts("saved\r\n");
     //-- switch task --

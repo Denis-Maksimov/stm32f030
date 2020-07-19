@@ -945,16 +945,16 @@
 **  Others
 *******************************************************************
 + */
-  
-#define REGISTER(a)     (*((volatile unsigned int *)(a)))
-#define true  ((unsigned)(1)) 
-#define false ((unsigned)(0)) 
-typedef unsigned char uint8_t;
-typedef unsigned int uint32_t;
-typedef unsigned short uint16_t;
-typedef signed char int8_t;
-typedef signed int int32_t;
-typedef signed short int16_t;
+#include "u_stddef.h"
+// #define REGISTER(a)     (*((volatile unsigned int *)(a)))
+// #define true  ((unsigned)(1)) 
+// #define false ((unsigned)(0)) 
+// typedef unsigned char uint8_t;
+// typedef unsigned int uint32_t;
+// typedef unsigned short uint16_t;
+// typedef signed char int8_t;
+// typedef signed int int32_t;
+// typedef signed short int16_t;
 
 unsigned int __system_clock; // <-- переменная для регистрации текущего значения частоты системы
 #endif // !STM32_H

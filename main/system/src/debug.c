@@ -20,11 +20,11 @@
 
 void debug(int adress){
         char* bufferr=(char*)u_malloc(9);
-        intToHex(adress,bufferr);
+        u_intToHex(adress,bufferr);
         puts(bufferr);
         puts(" - adress\r\n");
 
-        intToHex(REGISTER(adress),bufferr);
+        u_intToHex(REGISTER(adress),bufferr);
         puts(bufferr);
         puts(" - Value\r\n");
 
@@ -34,7 +34,7 @@ void debug(int adress){
 void print(int digit)
 {
         char* bufferr=(char*)u_malloc(9);
-        intToHex(digit,bufferr);
+        u_intToHex(digit,bufferr);
         puts("0x");
         puts(bufferr);
         puts("\r\n");

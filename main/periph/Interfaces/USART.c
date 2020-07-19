@@ -101,7 +101,7 @@ int write_DMA_USART(const char* buffer, uint16_t buf_size){
 /*blocking func*/
 void puts(const char* buffer){
 
-    while(write_DMA_USART(buffer, ((uint16_t)(strlen(buffer)))));
+    while(write_DMA_USART(buffer, ((uint16_t)(u_strlen(buffer)))));
 
     return;
 }

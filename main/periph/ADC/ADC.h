@@ -2,7 +2,7 @@
 #include "stm32.h"
 #include "GPIO.h"
 #include "USART.h"
-#include "string.h"
+#include "u_string.h"
 
 enum sample_time {
     cycles_1_5=0b000,
