@@ -12,6 +12,6 @@
 #include "NVIC.h"
 
 void init(void);
-
+extern char USART_buffer[];
 
 #endif

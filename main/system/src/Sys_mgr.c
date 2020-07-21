@@ -36,7 +36,7 @@ void SysTick_Handler(void){
 
 
     sys_tasks.ticks++;
-    REGISTER(GPIOC|GPIOx_ODR) ^= (1<<13);
+    // REGISTER(GPIOC|GPIOx_ODR) ^= (1<<13);
     while (!(REGISTER(SysTick_BASE|SysTick_CTRL)&SysTick_COUNTFLAG));
     
    
@@ -235,6 +235,18 @@ void task_mgr( )
 void os_delay(uint32_t cycles)
 {
     for(volatile uint32_t i=0;i<cycles;i++)
+    {   
+  
+        asm volatile ("wfi");
+    }
+
+}
+
+void os_sleep_ms(uint32_t time)
+{
+    uint32_t start_time=sys_tasks.ticks;
+
+    while(sys_tasks.ticks-start_time<time)
     {   
   
         asm volatile ("wfi");

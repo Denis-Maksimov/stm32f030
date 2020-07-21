@@ -6,7 +6,8 @@
 
 //--------------------------------------------------------------
 void USART_DMA_transmit_init(void);
-void USART_init(void){
+void USART_DMA_recv_init(void* buffer, size_t buf_size);
+void USART_init(void* buffer, size_t buf_size){
 
     //-- clock --
     REGISTER(RCC_BASE|RCC_APB2ENR) |= (RCC_APB2ENR_USART1EN);
@@ -26,9 +27,13 @@ void USART_init(void){
 
     //-- DMA
     USART_DMA_transmit_init();
+    
     REGISTER(USART1|USART_CR3) |= (USART_CR2_DMAT); //transmit
 
-    //REGISTER(USART1|USART_CR2) |= (USART_CR2_DMAR); //receive
+    if(buffer){
+      USART_DMA_recv_init(buffer, buf_size);
+      REGISTER(USART1|USART_CR2) |= (USART_CR2_DMAR); //receive
+    }
 
   
 
@@ -68,7 +73,43 @@ void USART_DMA_transmit_init(void){
    // REGISTER(DMA1_BASE|DMA_CCR4) |= DMA_CCRx_EN;
     return;
 }
+//--------------------------------------------------------------
 
+void USART_DMA_recv_init(void* buffer, size_t buf_size)
+{
+
+    REGISTER(DMA1_BASE|DMA_CCR5) &=~ DMA_CCRx_EN;
+    //-- general settings --
+      //periph adr
+      REGISTER(DMA1_BASE|DMA_CPAR5) = (USART1 + USART_DR); 
+      //interrupt
+      // REGISTER(DMA1_BASE|DMA_CCR4) |= DMA_CCRx_TCIE; 
+      //MEM<-PERIPH
+      REGISTER(DMA1_BASE|DMA_CCR5) &= ~(DMA_CCRx_DIR); 
+      //CYCLiC
+      REGISTER(DMA1_BASE|DMA_CCR5) |= (DMA_CCRx_CIRC); 
+
+    //-- perph settings --
+      //increment
+      REGISTER(DMA1_BASE|DMA_CCR5) &= ~(DMA_CCRx_PINC);
+      //size
+      REGISTER(DMA1_BASE|DMA_CCR5) &= ~(DMA_CCRx_PSIZE(0b11));
+      REGISTER(DMA1_BASE|DMA_CCR5) |= DMA_CCRx_PSIZE(PSIZE_8b);
+
+    //-- RAM memory settings --
+    //increment
+    REGISTER(DMA1_BASE|DMA_CCR5) |= DMA_CCRx_MINC;
+    //size
+    REGISTER(DMA1_BASE|DMA_CCR5) &= ~(DMA_CCRx_MSIZE(0b11));
+    REGISTER(DMA1_BASE|DMA_CCR5) |= DMA_CCRx_MSIZE(MSIZE_8b);
+
+    //-- set adress & size bufer
+      REGISTER(DMA1_BASE|DMA_CMAR5) = (uint32_t)buffer;
+      REGISTER(DMA1_BASE|DMA_CNDTR5) = buf_size;
+    //-- Enable DMA --
+    REGISTER(DMA1_BASE|DMA_CCR5) |= DMA_CCRx_EN;
+    return;
+}
 //--------------------------------------------------------------
 
 int write_DMA_USART(const char* buffer, uint16_t buf_size){

@@ -36,7 +36,7 @@ struct Timer_mode_settings{
 void TIM5_init(uint32_t mode, void* settings);
 void TIM5_time_base_unit(uint16_t prescaller,uint16_t array);
 void TIM5_encoder_interface_mode(struct Encoder_mode_settings* cfg);
-
+void TIM5_PWM_output_mode();
 /** Examples:
 
 void example(){

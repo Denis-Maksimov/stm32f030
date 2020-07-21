@@ -821,13 +821,13 @@
     #define DMA_CPAR7           0x88
     #define DMA_CMAR7           0x8c
 
-    // -- DMA_CCR(0-7) --
-    #define DMA_CCRx_EN     (0X01<<0)
-    #define DMA_CCRx_TCIE   (0X01<<1)
-    #define DMA_CCRx_HTIE   (0X01<<2)
-    #define DMA_CCRx_TEIE   (0X01<<3)
-    #define DMA_CCRx_DIR    (0X01<<4)
-    #define DMA_CCRx_CIRC   (0X01<<5)
+    // -- DMA_CCR(0-7) -- channel x configuration register
+    #define DMA_CCRx_EN     (0X01<<0) //Channel enable
+    #define DMA_CCRx_TCIE   (0X01<<1) //Transfer complete interrupt enable
+    #define DMA_CCRx_HTIE   (0X01<<2) //Half transfer interrupt enable
+    #define DMA_CCRx_TEIE   (0X01<<3) //Transfer error interrupt enable
+    #define DMA_CCRx_DIR    (0X01<<4) //Data transfer direction 0: Read from peripheral 1: Read from memory
+    #define DMA_CCRx_CIRC   (0X01<<5) //Circular mode
     #define DMA_CCRx_PINC   (0X01<<6)
     #define DMA_CCRx_MINC   (0X01<<7)
     #define DMA_CCRx_PSIZE(a)   ((0b11&(a))<<8)

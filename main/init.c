@@ -11,14 +11,16 @@
 //     REGISTER(GPIOC|GPIOx_BSRR) = (1<<13);
 // }
 
+char USART_buffer[20];
 
 void init(void){
 
     RCC_reset();
-    USART_init();		//Настройка USART
+    USART_init(USART_buffer,20);		//Настройка USART
     GPIO_init(); 		//Настройка пинов
     set_clock_HSE(); // arbeitung--???
     NVIC_init();
-    SysTick_init(720000);//100 000
+    SysTick_init(72);//100 000
+
 
 }

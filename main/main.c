@@ -42,13 +42,35 @@
 char bufferr[5];
 uint32_t stack;
 //------------------------------------
+int x=1;
+
+//261 277 293 311 329 349 369 392 415 440 466 494
+//523 554 587 622 659 698 740 784 830 880 932 987
+//1 МГц -> 0,000 001 с == 1
+#define C_  95
+#define Cd  90
+#define D_  85
+#define Dd  80
+#define E_  75
+#define F_  71
+#define Fd  67
+#define G_  63
+#define Gd  60
+#define A_  56
+#define B_  53
+#define H_  50
+
+int y[]={1,1,1,5};
 void main_switcher(){
+  
   while(1)
   {     
-       
-        puts("\r\noh, ja-ja!!! noch!");
-         os_delay(25);
-   //     asm volatile("wfi");
+      //  write_DMA_USART(USART_buffer, 20);
+        // puts("\r\noh, ja-ja!!! noch!");
+        os_delay(10000);
+         x++;
+        
+         if(x>sizeof(y)){x=0;}
   }
 
 }
@@ -59,8 +81,10 @@ void task1()
 {
   while(1)
   {
-    puts("\r\nyeah, baby! its work!!");
-    os_delay(9);
+    REGISTER(GPIOC|GPIOx_ODR) ^= (1<<13);
+    os_delay(y[x]);
+    // puts("\r\nyeah, baby! its work!!");
+    // os_delay(9);
 //    asm volatile("wfi");
   }
 }
@@ -73,7 +97,7 @@ void main(){
         init();
 //        ssd1306init();
         pin_init(15,'C',HI_Z_INPUT);
-
+        void TIM5_PWM_output_mode();
         thread_create(0);
         thread_create(task1);
         thread_create(main_switcher);
