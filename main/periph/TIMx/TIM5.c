@@ -97,8 +97,9 @@ void TIM5_output_compare_mode(){
 #define TIMx_CCRx(a) 0x30+(a*4) 
 void PWM_setup(struct TIMx_chx* tim, u16 T_us, u16 duty_cycle)
 {
+    REGISTER(tim->TIMx+TIMx_CR1)&=~(TIMx_CR1_CEN);
     if( (duty_cycle==0)||(T_us==0) ) {
-        REGISTER(tim->TIMx+TIMx_CR1)&=~(TIMx_CR1_CEN);
+        
         return;
     }
     REGISTER(tim->TIMx+TIMx_CNT)=0;

@@ -244,6 +244,7 @@ void os_delay(uint32_t cycles)
 
 void os_sleep_ms(uint32_t time)
 {
+    time =time* 100;
     uint32_t start_time=sys_tasks.ticks;
 
     while(sys_tasks.ticks-start_time<time)

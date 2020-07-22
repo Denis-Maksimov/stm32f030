@@ -42,7 +42,7 @@
 char bufferr[5];
 uint32_t stack;
 //------------------------------------
-int x=1;
+u16 x=1;
 
 //261 277 293 311 329 349 369 392 415 440 466 494
 //523 554 587 622 659 698 740 784 830 880 932 987
@@ -60,20 +60,20 @@ int x=1;
 #define B_  53
 #define H_  50
 
-u16 y[]={C_,D_,E_,F_,G_,A_,H_};
+u16 y[] ={C_*4 ,D_*4 ,E_*4 ,F_*4 ,G_*4 ,A_*4 ,H_*4 };
+u16 y1[]={10000,10000,10000,10000,10000,10000,10000};
 extern struct TIMx_chx handl;
 void main_switcher(){
   
   while(1)
   {     
-      //  write_DMA_USART(USART_buffer, 20);
-        // puts("\r\noh, ja-ja!!! noch!");
-        // os_delay(10000);
-         os_delay(10000);
+
+         
+         PWM_setup(&handl, y[x], (y[x])>>2);
+         os_delay(y1[x]);
+
          x++;
-        
-         if(x>sizeof(y)){x=0;}
-         PWM_setup(&handl, y[x], y[x]/2);
+         if(x>6){x=0;}
   }
 
 }
@@ -87,8 +87,8 @@ void task1()
     REGISTER(GPIOC|GPIOx_ODR) ^= (1<<13);
     // os_delay(y[x]);
     // puts("\r\nyeah, baby! its work!!");
-    write_DMA_USART(USART_buffer, 20);
-    os_sleep_ms(100000);
+    // write_DMA_USART(USART_buffer, 20);
+    os_sleep_ms(1000);
 //    asm volatile("wfi");
   }
 }
