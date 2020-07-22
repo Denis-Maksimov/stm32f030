@@ -318,13 +318,13 @@
     #define TIM5_BASE      0x40000C00
 
     #define TIMx_CR1        0x00
-        #define TIMx_CR1_CEN    (0x01<<0)
-        #define TIMx_CR1_UDIS   (0x01<<1) // Update disable -  enable/disable UEV event generation.
-        #define TIMx_CR1_URS    (0x01<<2) // Update request source
-        #define TIMx_CR1_OPM    (0x01<<3) // One-pulse mode
-        #define TIMx_CR1_DIR    (0x01<<4) // 0-up,1-down
+        #define TIMx_CR1_CEN    (0x01<<0)   //Counter enable
+        #define TIMx_CR1_UDIS   (0x01<<1)   // Update disable -  enable/disable UEV event generation.
+        #define TIMx_CR1_URS    (0x01<<2)   // Update request source
+        #define TIMx_CR1_OPM    (0x01<<3)   // One-pulse mode
+        #define TIMx_CR1_DIR    (0x01<<4)   // 0-up,1-down
         #define TIMx_CR1_CMS(a)     ((0b11&a)<<5)//Center-aligned mode selection
-            #define CMS_EDGE_AM     0b00
+            #define CMS_EDGE_AM     0b00    
             #define CMS_CENTER_AM1  0b01
             #define CMS_CENTER_AM2  0b10
             #define CMS_CENTER_AM3  0b11
@@ -394,7 +394,8 @@
 
     #define TIMx_EGR        0x14        //event generation register
 
-    #define TIMx_CCMR1     0x18
+    //<< capture/compare mode register 1 (1,2 chanel's)>>
+    #define TIMx_CCMR1     0x18         
         //--Input mode--
         #define TIMx_CCMR1_CC1S(a)     ((0b11&a)<<0)//Capture/Compare 1 selection
             #define CC1S_OUT      0x00    //00: CC1 channel is configured as output
@@ -454,12 +455,12 @@
             #define OC2M_TOOGLE             0b011 //OC1REF toggles when TIMx_CNT=TIMx_CCR1
             #define OC2M_FORCED_LOW         0b100
             #define OC2M_FORCED_HI          0b101
-            #define OC2M_PWD1               0b110 //In upcounting, channel 1 is active as long as TIMx_CNT<TIMx_CCR1 else inactive. In downcounting, channel 1 is inactive (OC1REF=‘0) as long as
-            #define OC2M_PWD2               0b111 //In upcounting, channel 1 is inactive as long as TIMx_CNT<TIMx_CCR1 else active. In downcounting, channel 1 is active as long as TIMx_CNT>TIMx_CCR1 else inactive
+            #define OC2M_PWD1               0b110 //In upcounting, channel 2 is active as long as TIMx_CNT<TIMx_CCR1 else inactive. In downcounting, channel 1 is inactive (OC1REF=‘0) as long as
+            #define OC2M_PWD2               0b111 //In upcounting, channel 2 is inactive as long as TIMx_CNT<TIMx_CCR1 else active. In downcounting, channel 1 is active as long as TIMx_CNT>TIMx_CCR1 else inactive
         #define TIMx_CCMR1_OC2CE    (0x01<<15) // Output compare 2 clear enable
 
-        
-    #define TIMx_CCMR2     0x1C         // capture/compare mode register 2 
+    //<< capture/compare mode register 2 (3,4 chanel's)>>    
+    #define TIMx_CCMR2     0x1C         
     //--Input mode--
         #define TIMx_CCMR2_CC3S(a)     ((0b11&a)<<0)//Capture/Compare 1 selection
             #define CC3S_OUT      0x00    //00: CC1 channel is configured as output
@@ -548,12 +549,12 @@
          * 1: inverted: capture is done on a falling edge of IC1. When used as external trigger, IC1 is inverted
          * **/
         #define TIMx_CCER_CC1P     (0x01<<1)
-        #define TIMx_CCER_CC2E     (0x01<<4)
-        #define TIMx_CCER_CC2P     (0x01<<5)
-        #define TIMx_CCER_CC3E     (0x01<<8)
-        #define TIMx_CCER_CC3P     (0x01<<9)
-        #define TIMx_CCER_CC4E     (0x01<<12)
-        #define TIMx_CCER_CC4P     (0x01<<13)
+        #define TIMx_CCER_CC2E     (0x01<<4)    //выход на pin
+        #define TIMx_CCER_CC2P     (0x01<<5)    //Capture/Compare 2 output polarity
+        #define TIMx_CCER_CC3E     (0x01<<8)    //выход на pin
+        #define TIMx_CCER_CC3P     (0x01<<9)    //Capture/Compare 3 output polarity
+        #define TIMx_CCER_CC4E     (0x01<<12)   //выход на pin
+        #define TIMx_CCER_CC4P     (0x01<<13)   //Capture/Compare 4 output polarity
 
     #define TIMx_CNT        0x24        //текущее значение
     #define TIMx_PSC  	    0x28        //предделитель
@@ -561,9 +562,9 @@
    
 
     #define TIMx_CCR1       0x34 // TIMx capture/compare register 1 
-    #define TIMx_CCR2       0x38
-    #define TIMx_CCR3       0x3c
-    #define TIMx_CCR4       0x40
+    #define TIMx_CCR2       0x38 // TIMx capture/compare register 2
+    #define TIMx_CCR3       0x3c // TIMx capture/compare register 3
+    #define TIMx_CCR4       0x40 // TIMx capture/compare register 4
 
     #define TIMx_DCR        0x48 //TIMx DMA control register
         #define TIMx_DCR_DBA(a)    ((0b11111&a)<<0) // DMA base address
@@ -588,40 +589,46 @@
 ** USART Universal sinchronus-asinchronus receiver-transmitter Register
 *******************************************************************
 + */
+    //## USART's base adress##
     #define USART1         0x40013800	
 
+    //<< USART status register >>
     #define USART_SR 		0x00
-        #define USART_SR_PE         0x01
-        #define USART_SR_FE         0x02
-        #define USART_SR_NE         0x04
-        #define USART_SR_ORE        0x08
-        #define USART_SR_IDLE       0x10
-        #define USART_SR_RXNE       0x20
-        #define USART_SR_TC         0x40
-        #define USART_SR_TXE        0x80
-        #define USART_SR_LBD        0x100
-        #define USART_SR_CTS        0x200
+        #define USART_SR_PE         0x01    //Parity error. This bit is set by hardware when a parity error occurs in receiver mode.
+        #define USART_SR_FE         0x02    //Framing error. This bit is set by hardware when a de-synchronization, excessive noise or a break character is detected
+        #define USART_SR_NE         0x04    //Noise is detected on a received frame
+        #define USART_SR_ORE        0x08    //Owerrun error.This bit is set by hardware when the word currently being received in the shift register is ready to be transferred into the RDR register while RXNE=1
+        #define USART_SR_IDLE       0x10    //Idle Line is detected
+        #define USART_SR_RXNE       0x20    //content of the RDR shift register has been transferred to the USART_DR register
+        #define USART_SR_TC         0x40    //transmission of a frame containing data is complete and if TXE is set
+        #define USART_SR_TXE        0x80    //content of the TDR register has been transferred into the shift register
+        #define USART_SR_LBD        0x100   //LIN break is detected
+        #define USART_SR_CTS        0x200   //CTS input toggles
 
+    //<< USART DATA register >>
     #define USART_DR 		0x04
 
+    //<< USART Baudrate register >>
     #define USART_BRR     0x08
 
+    //<< USART control register 1 >>
     #define USART_CR1 	    0x0c
-        #define USART_CR1_SBK 	    0x01 //send Brake
-        #define USART_CR1_RWU 	    0x02
-        #define USART_CR1_RE 	    0x04 //RX enable
-        #define USART_CR1_TE 	    0x08 //TX enable
-        #define USART_CR1_IDLEIE 	0x10
-        #define USART_CR1_RXNEIE 	0x20
-        #define USART_CR1_TCIE 	    0x40 //TX complete interrupt enable
-        #define USART_CR1_TXEIE 	0x80
-        #define USART_CR1_PEIE 	    0x100
-        #define USART_CR1_PS 	    0x200
-        #define USART_CR1_PCE 	    0x400
-        #define USART_CR1_WAKE 	    0x800
-        #define USART_CR1_M 	    0x1000 //9-bit
-        #define USART_CR1_UE 	    0x2000 //USART enable
+        #define USART_CR1_SBK 	    0x01    //send Brake
+        #define USART_CR1_RWU 	    0x02    //Receiver wakeup; Этот бит определяет, находится ли USART в "mute" режиме или нет. Он устанавливается и очищается soft-варно и может быть очищен аппаратным обеспечением при распознавании последовательности пробуждения.
+        #define USART_CR1_RE 	    0x04    //RX enable
+        #define USART_CR1_TE 	    0x08    //TX enable
+        #define USART_CR1_IDLEIE 	0x10    //IDLE interrupt enable
+        #define USART_CR1_RXNEIE 	0x20    //RXNE interrupt enable (Read data register not empty)
+        #define USART_CR1_TCIE 	    0x40    //TX complete interrupt enable
+        #define USART_CR1_TXEIE 	0x80    //TXE interrupt enable (Transmit data register empty)
+        #define USART_CR1_PEIE 	    0x100   //PE interrupt enable (Parity error)
+        #define USART_CR1_PS 	    0x200   //Паритет. 0-чёт 1-нечёт./ Parity selection 0: Even parity 1: Odd parity ; This bit selects the odd or even parity when the parity generation/detection is enabled (PCE bit set)
+        #define USART_CR1_PCE 	    0x400   //Parity control enable
+        #define USART_CR1_WAKE 	    0x800   //Wakeup method: 0: Idle Line. 1: Address Mark
+        #define USART_CR1_M 	    0x1000  //9-bit
+        #define USART_CR1_UE 	    0x2000  //USART enable
 
+    //<< USART control register 2 >>
     #define USART_CR2 	    0x10
         #define USART_CR2_ADD(a) 	((0b1111&a)<<0) //Address of the USART node
         #define USART_CR2_LBDL 	    (0x01<<5) //lin break detection length 0=10bit 1=11bit
@@ -638,20 +645,22 @@
 
         #define USART_CR2_LINEN	    (0x01<<14) //LIN mode enable
 
+    //<< USART control register 3 >>
     #define USART_CR3 	    0x14
-        #define USART_CR2_EIE       (0x01<<0) //Error interrupt enable
-        #define USART_CR2_IREN      (0x01<<1)
-        #define USART_CR2_IRLP      (0x01<<2)
-        #define USART_CR2_HDSEL     (0x01<<3)
-        #define USART_CR2_NACK      (0x01<<4)
-        #define USART_CR2_SCEN      (0x01<<5)
-        #define USART_CR2_DMAR      (0x01<<6) //DMA enable receiver
-        #define USART_CR2_DMAT      (0x01<<7) //DMA enable transmitter
-        #define USART_CR2_RTSE      (0x01<<8)
-        #define USART_CR2_CTSE      (0x01<<9)
-        #define USART_CR2_CTSIE     (0x01<<10)
+        #define USART_CR3_EIE       (0x01<<0) //Error interrupt enable
+        #define USART_CR3_IREN      (0x01<<1)   //IrDA mode enable
+        #define USART_CR3_IRLP      (0x01<<2)   //IrDA low-power
+        #define USART_CR3_HDSEL     (0x01<<3)   //Half-duplex selection
+        #define USART_CR3_NACK      (0x01<<4)   //Smartcard NACK enable
+        #define USART_CR3_SCEN      (0x01<<5)   //Smartcard mode enable
+        #define USART_CR3_DMAR      (0x01<<6)   //DMA enable receiver
+        #define USART_CR3_DMAT      (0x01<<7)   //DMA enable transmitter
+        #define USART_CR3_RTSE      (0x01<<8)   //RTS enable
+        #define USART_CR3_CTSE      (0x01<<9)   //CTS enable
+        #define USART_CR3_CTSIE     (0x01<<10)  //CTS interrupt enable
 
-    #define USART_GTPR 	    0x18        //Guard time and prescaler register 
+    //<< Guard time and prescaler register >>
+    #define USART_GTPR 	    0x18        
         #define USART_GTPR_PSC(a) 	((0xFF & (a))<<0) //Prescaler value
         #define USART_GTPR_GT(a) 	((0xFF & (a))<<8) //Guard time value
 

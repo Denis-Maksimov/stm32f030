@@ -60,17 +60,20 @@ int x=1;
 #define B_  53
 #define H_  50
 
-int y[]={1,1,1,5};
+u16 y[]={C_,D_,E_,F_,G_,A_,H_};
+extern struct TIMx_chx handl;
 void main_switcher(){
   
   while(1)
   {     
       //  write_DMA_USART(USART_buffer, 20);
         // puts("\r\noh, ja-ja!!! noch!");
-        os_delay(10000);
+        // os_delay(10000);
+         os_delay(10000);
          x++;
         
          if(x>sizeof(y)){x=0;}
+         PWM_setup(&handl, y[x], y[x]/2);
   }
 
 }
@@ -82,9 +85,10 @@ void task1()
   while(1)
   {
     REGISTER(GPIOC|GPIOx_ODR) ^= (1<<13);
-    os_delay(y[x]);
+    // os_delay(y[x]);
     // puts("\r\nyeah, baby! its work!!");
-    // os_delay(9);
+    write_DMA_USART(USART_buffer, 20);
+    os_sleep_ms(100000);
 //    asm volatile("wfi");
   }
 }
@@ -96,8 +100,10 @@ void main(){
         asm volatile ("cpsid f");
         init();
 //        ssd1306init();
-        pin_init(15,'C',HI_Z_INPUT);
-        void TIM5_PWM_output_mode();
+        USART_buffer[0]='X';
+        USART_buffer[19]='Z';
+        // pin_init(15,'C',HI_Z_INPUT);
+        // void TIM5_PWM_output_mode();
         thread_create(0);
         thread_create(task1);
         thread_create(main_switcher);
@@ -106,8 +112,8 @@ void main(){
 
 	while(1){
 
-        puts("\r\nticks: ");
-        print(sys_tasks.ticks);
+        // puts("\r\nticks: ");
+        // print(sys_tasks.ticks);
           		
         os_delay(19);
         //asm("wfi");

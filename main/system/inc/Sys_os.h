@@ -72,7 +72,7 @@ void thread_create( void(*thread_handler)(void) );
 void yield();
 void task_mgr( );
 void os_delay(uint32_t cycles);
-
+void os_sleep_ms(uint32_t time);
 // void increment_task() __attribute__( ( naked ) );
 // u_thread_t task_create( void(*thread_handler)(void), u_thread_attr_t* attribs  );
 // int stack_alloc(u_thread_attr_t* attribs);

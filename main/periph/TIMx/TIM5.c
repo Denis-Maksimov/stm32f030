@@ -92,28 +92,109 @@ void TIM5_forced_output_mode(){
 void TIM5_output_compare_mode(){
 
 }
-void TIM5_PWM_output_mode(){
-    //Даёшь тактирование!
-    REGISTER(RCC_BASE|RCC_APB1ENR) |= RCC_APB1_TIM2EN;
-    pin_init(1,'A',AF_OPEN_DRAIN_OUTPUT_50MHZ);
 
 
-    REGISTER(TIM2_BASE+TIMx_PSC)=20;
-    REGISTER(TIM2_BASE+TIMx_ARR)=1000;
-    
-    REGISTER(TIM2_BASE+TIMx_CCR2)=500;
-
-    REGISTER(TIM2_BASE+TIMx_CCMR1)|=TIMx_CCMR1_OC2M(OC2M_PWD1);
-    REGISTER(TIM2_BASE+TIMx_CCER)|=TIMx_CCER_CC2E;
-    REGISTER(TIM2_BASE+TIMx_CCER)&=~TIMx_CCER_CC2P;
-    REGISTER(TIM2_BASE+TIMx_CR1)&=~TIMx_CR1_DIR;
-
-
-
-    REGISTER(TIM2_BASE+TIMx_CR1)|=TIMx_CR1_CEN;
-
-
+#define TIMx_CCRx(a) 0x30+(a*4) 
+void PWM_setup(struct TIMx_chx* tim, u16 T_us, u16 duty_cycle)
+{
+    if( (duty_cycle==0)||(T_us==0) ) {
+        REGISTER(tim->TIMx+TIMx_CR1)&=~(TIMx_CR1_CEN);
+        return;
+    }
+    REGISTER(tim->TIMx+TIMx_CNT)=0;
+    REGISTER(tim->TIMx+TIMx_ARR)=T_us;  //период счёта
+    REGISTER(tim->TIMx+TIMx_CCRx(tim->ch))=duty_cycle;  //коэффициент заполнения
+    REGISTER(tim->TIMx+TIMx_CR1)|=TIMx_CR1_CEN;
 }
+/**
+ * @brief  
+ * @note   
+ *      TIM5_CH4 > PA3
+ * 
+ *      TIM4_CH1 > PB6
+ *      TIM4_CH2 > PB7
+ *      TIM4_CH3 > PB8
+ *      TIM4_CH4 > PB9
+ * 
+ *      TIM3_CH1 > PA6
+ *      TIM3_CH2 > PA7
+ *      TIM3_CH3 > PB0
+ *      TIM3_CH4 > PB1
+ * 
+ *      TIM2_CH1_ETR > PA0
+ *      TIM2_CH2 > PA1
+ *      TIM2_CH3 > PA2
+ *      TIM2_CH4 > PA3
+ *      
+ * @retval None
+ */
+void PWM_output_mode(struct TIMx_chx* ret_handle,uint8_t pin, uint8_t port)
+{
+    
+    u32 TIMx;
+    u8 ch;
+    if ((pin<=3) && (port=='A')){
+        TIMx =  TIM2_BASE;
+        REGISTER(RCC_BASE|RCC_APB1ENR) |= RCC_APB1_TIM2EN;
+        ch = pin+1;
+    }else if ( (((pin==6)||(pin==7)) && port=='A') || ((pin<2) &&(port=='B') ) )
+    {
+        TIMx =  TIM3_BASE;
+        REGISTER(RCC_BASE|RCC_APB1ENR) |= RCC_APB1_TIM3EN;
+        (pin<2)?(ch=pin+1):(ch=pin-5);
+    }else if (( pin-6 <=4) && (port=='B'))
+    {
+        TIMx =  TIM4_BASE;
+        REGISTER(RCC_BASE|RCC_APB1ENR) |= RCC_APB1_TIM4EN;
+        ch = pin-6;
+    }else
+    {
+        //TODO: remap & log
+        return;
+    }
+    
+    
+    
+    pin_init(pin,port,AF_PUSH_PULL_OUTPUT_50MHZ);
+
+    // //Даёшь тактирование!
+    // REGISTER(RCC_BASE|RCC_APB1ENR) |= RCC_APB1_TIM2EN;
+
+    REGISTER(TIMx+TIMx_PSC)=72;    //предделитель счёта
+
+    // REGISTER(TIMx+TIMx_ARR)=T_us;  //период счёта
+    // REGISTER(TIMx+TIMx_CCRx(ch))=duty_cycle;  //коэффициент заполнения
+
+    if(ch==1){
+        REGISTER(TIMx+TIMx_CCMR1)|=TIMx_CCMR1_OC1M(OC2M_PWD1);
+        REGISTER(TIMx+TIMx_CCER)|=TIMx_CCER_CC1E;  //выход на ножку
+        REGISTER(TIMx+TIMx_CCER)&=~(TIMx_CCER_CC1P); //полярность
+    }
+    else if(ch==2){
+        REGISTER(TIMx+TIMx_CCMR1)|=TIMx_CCMR1_OC2M(OC2M_PWD1);
+        REGISTER(TIMx+TIMx_CCER)|=TIMx_CCER_CC2E;  //выход на ножку
+        REGISTER(TIMx+TIMx_CCER)&=~(TIMx_CCER_CC2P); //полярность
+    }
+    
+    else if(ch==3){
+        REGISTER(TIMx+TIMx_CCMR2)|=TIMx_CCMR2_OC3M(OC2M_PWD1);
+        REGISTER(TIMx+TIMx_CCER)|=TIMx_CCER_CC3E;  //выход на ножку
+        REGISTER(TIMx+TIMx_CCER)&=~(TIMx_CCER_CC3P); //полярность
+    }
+    
+    else if(ch==4){
+        REGISTER(TIMx+TIMx_CCMR2)|=TIMx_CCMR2_OC4M(OC2M_PWD1);
+        REGISTER(TIMx+TIMx_CCER)|=TIMx_CCER_CC4E;  //выход на ножку
+        REGISTER(TIMx+TIMx_CCER)&=~(TIMx_CCER_CC4P); //полярность
+    }
+        
+    REGISTER(TIMx+TIMx_CR1)&=~(TIMx_CR1_DIR);
+    // REGISTER(TIMx+TIMx_CR1)|=TIMx_CR1_CEN;
+    ret_handle->TIMx=TIMx;
+    ret_handle->ch=ch;
+
+}//PWM_output_mode
+#undef TIMx_CCRx 
 
 void TIM5_PWM_one_shot_mode(){
 

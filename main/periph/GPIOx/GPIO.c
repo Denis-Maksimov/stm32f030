@@ -6,15 +6,16 @@ void GPIO_init(void){
 //    REGISTER(GPIOC|GPIOx_CRH)=0x22222222;//B 0-7 output
     //Настройка пинов
     pin_init(13,'C',PUSH_PULL_OUTPUT_2MHZ);
-    pin_init(14,'C',PUSH_PULL_OUTPUT_2MHZ);
+    // pin_init(1,'A',AF_PUSH_PULL_OUTPUT_50MHZ);
+    // pin_init(14,'C',PUSH_PULL_OUTPUT_2MHZ);
 //    GPIOval* GPIO_c=(GPIOval*)(GPIOC|GPIOx_CRH); //GPIOC high's pins select
     
 //	    GPIO_c->pin13=PUSH_PULL_OUTPUT_2MHZ;
 //	    GPIO_c->pin14=PUSH_PULL_OUTPUT_2MHZ;
 
     //    REGISTER(GPIOB|GPIOx_CRL)=0x22222222;//B 0-7 output
-    pin_init(11,'B',HI_Z_INPUT);
-    pin_init(10,'B',PUSH_PULL_OUTPUT_50MHZ);
+    // pin_init(11,'B',HI_Z_INPUT);
+    // pin_init(10,'B',PUSH_PULL_OUTPUT_50MHZ);
  //   GPIO_c=(GPIOval*)(GPIOB|GPIOx_CRH);
    //     GPIO_c->pin11=HI_Z_INPUT;//echo
 	 //   GPIO_c->pin10=PUSH_PULL_OUTPUT_50MHZ;//trig

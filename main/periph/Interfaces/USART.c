@@ -28,11 +28,11 @@ void USART_init(void* buffer, size_t buf_size){
     //-- DMA
     USART_DMA_transmit_init();
     
-    REGISTER(USART1|USART_CR3) |= (USART_CR2_DMAT); //transmit
+    REGISTER(USART1|USART_CR3) |= (USART_CR3_DMAT); //transmit
 
     if(buffer){
       USART_DMA_recv_init(buffer, buf_size);
-      REGISTER(USART1|USART_CR2) |= (USART_CR2_DMAR); //receive
+      REGISTER(USART1|USART_CR3) |= (USART_CR3_DMAR); //receive
     }
 
   

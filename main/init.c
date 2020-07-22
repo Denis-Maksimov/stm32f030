@@ -11,12 +11,15 @@
 //     REGISTER(GPIOC|GPIOx_BSRR) = (1<<13);
 // }
 
-char USART_buffer[20];
-
+char USART_buffer[256];
+struct TIMx_chx handl;
 void init(void){
 
     RCC_reset();
-    USART_init(USART_buffer,20);		//Настройка USART
+    USART_init(USART_buffer,256);		//Настройка USART
+    
+    PWM_output_mode(&handl,1,'A');
+    PWM_setup(&handl, 1000, 500);
     GPIO_init(); 		//Настройка пинов
     set_clock_HSE(); // arbeitung--???
     NVIC_init();
