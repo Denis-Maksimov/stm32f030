@@ -1,7 +1,8 @@
 #include "init.h"
-#define sys_clock  8000000
-#define msec    1000
-#define _uSEC   10 //микросекунд на цикл
+
+// #define sys_clock  8000000
+// #define msec    1000
+// #define _uSEC   10 //микросекунд на цикл
 
 // inline void off(void){
 //     REGISTER(GPIOC|GPIOx_BRR) = (1<<13);
@@ -13,6 +14,15 @@
 
 char USART_buffer[256];
 struct TIMx_chx handl;
+
+static void GPIO_init(void){
+
+    //Настройка пинов
+    pin_init(13,'C',PUSH_PULL_OUTPUT_2MHZ);
+
+}
+
+
 void init(void){
 
     RCC_reset();
@@ -27,3 +37,10 @@ void init(void){
 
 
 }
+
+
+
+
+
+
+

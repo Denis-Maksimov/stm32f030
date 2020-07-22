@@ -2,7 +2,7 @@
 // #include <stdlib.h>
 // #include <string.h>
 #include "u_chain.h"
-
+#include "u_mallocat.h"
 
 // #undef c_new
 #define c_new(t)     ((t*)u_malloc(sizeof(t)))

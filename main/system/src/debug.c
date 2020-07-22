@@ -1,6 +1,7 @@
 #include "debug.h"
-#include "stdlib.h"
-#include "string.h"
+#include "u_stdlib.h"
+#include "u_string.h"
+#include "USART.h"
 // void debug(void* adress){
 //     typedef struct tagReg{
     

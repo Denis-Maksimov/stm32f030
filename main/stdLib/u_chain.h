@@ -1,7 +1,9 @@
 #ifndef U_CHAIN_H
 #define U_CHAIN_H
 #include "u_stddef.h"
-#include "u_mallocat.h"
+
+#define STDLIB_API  extern
+
 //-------------
 struct Array{
     void* data;
@@ -17,6 +19,8 @@ struct chain
 
 };
 
+typedef struct chain u_list;
+
 // extern struct chain* init_chain();
 /**
  * @brief  создаёт двусвязный список и помещает данные в первый элемент
@@ -25,11 +29,11 @@ struct chain
  * @param  n: размер данных в байтах
  * @retval указатель
  */
-struct chain* u_new_chain(void* _data, size_t n);
+u_list* u_new_chain(void* _data, size_t n);
 
-struct chain* u_find_last(struct chain* ch);
+u_list* u_find_last(u_list* ch);
 
-struct chain* u_find_first(struct chain* ch);
+u_list* u_find_first(u_list* ch);
 
 /**
  * @brief  объединяет 2 цепи в одну
@@ -38,14 +42,15 @@ struct chain* u_find_first(struct chain* ch);
  * @param  second: 
  * @retval 
  */
- int u_attach(struct chain* first, struct chain* second);
+ int u_attach(u_list* first, u_list* second);
 
- struct chain* u_insert_after(struct chain* dest, void* data, size_t n);
- struct chain* u_insert_after_ch(struct chain* dest, struct chain* ch);
- struct chain* u_insert_before(struct chain* dest, void* data, size_t n);
- void u_free_chain(struct chain* ch);
- struct chain* u_cut(struct chain* ch);
- struct chain* u_copy(struct chain* ch);
- void u_rewrite_chain(struct chain* ch,void* data, size_t n);
+STDLIB_API u_list* u_insert_after(u_list* dest, void* data, size_t n);
+STDLIB_API u_list* u_insert_after_ch(u_list* dest, u_list* ch);
+STDLIB_API u_list* u_insert_before(u_list* dest, void* data, size_t n);
+STDLIB_API void u_free_chain(u_list* ch);
+STDLIB_API u_list* u_cut(u_list* ch);
+STDLIB_API u_list* u_copy(u_list* ch);
+STDLIB_API void u_rewrite_chain(u_list* ch,void* data, size_t n);
 
+#undef STDLIB_API
 #endif // !U_CHAIN_H

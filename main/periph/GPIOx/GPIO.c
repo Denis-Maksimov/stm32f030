@@ -1,25 +1,5 @@
 #include "GPIO.h"
 
-void GPIO_init(void){
-    //Даёшь тактирование!
-//    REGISTER(RCC_BASE|RCC_APB2ENR) |= (RCC_APB2ENR_IOPCEN|RCC_APB2ENR_IOPBEN);
-//    REGISTER(GPIOC|GPIOx_CRH)=0x22222222;//B 0-7 output
-    //Настройка пинов
-    pin_init(13,'C',PUSH_PULL_OUTPUT_2MHZ);
-    // pin_init(1,'A',AF_PUSH_PULL_OUTPUT_50MHZ);
-    // pin_init(14,'C',PUSH_PULL_OUTPUT_2MHZ);
-//    GPIOval* GPIO_c=(GPIOval*)(GPIOC|GPIOx_CRH); //GPIOC high's pins select
-    
-//	    GPIO_c->pin13=PUSH_PULL_OUTPUT_2MHZ;
-//	    GPIO_c->pin14=PUSH_PULL_OUTPUT_2MHZ;
-
-    //    REGISTER(GPIOB|GPIOx_CRL)=0x22222222;//B 0-7 output
-    // pin_init(11,'B',HI_Z_INPUT);
-    // pin_init(10,'B',PUSH_PULL_OUTPUT_50MHZ);
- //   GPIO_c=(GPIOval*)(GPIOB|GPIOx_CRH);
-   //     GPIO_c->pin11=HI_Z_INPUT;//echo
-	 //   GPIO_c->pin10=PUSH_PULL_OUTPUT_50MHZ;//trig
-}
 
 void pin_init(uint8_t pin, uint8_t port, enum pin_mode mode){
     
@@ -52,15 +32,14 @@ void pin_init(uint8_t pin, uint8_t port, enum pin_mode mode){
         REGISTER(RCC_BASE|RCC_APB2ENR) |= (RCC_APB2ENR_IOPCEN);
         break;
     default:
-        ///TODO:
+        ///TODO: debug_info
         return;
     }
     
     //-- sellect mode --
     #define GPIOx_CRx *((volatile uint32_t*)(GPIO_base | _offset))
     uint32_t mask = 0x0f;
-    //mask=(mask<<pin);                                           // set bits mask
-    GPIOx_CRx &= ~(mask<<(pin*4));                            // clearing bits mask
+    GPIOx_CRx &= ~(mask<<(pin*4));                     // clearing bits mask
     GPIOx_CRx |= (uint32_t)((mode & mask)<<(pin*4));   // set mode
     #undef GPIOx_CRx
 
@@ -82,27 +61,28 @@ void pin_init(uint8_t pin, uint8_t port, enum pin_mode mode){
 int digital_read(uint8_t pin, uint8_t port){
     //-- sellect port & base --
     volatile uint32_t GPIO_base=0;
+
+    if(pin>15)return -1;
     switch (port)
     {
     
     case 'A':
         GPIO_base = (GPIOA);
-        REGISTER(RCC_BASE|RCC_APB2ENR) |= (RCC_APB2ENR_IOPAEN);
+        // REGISTER(RCC_BASE|RCC_APB2ENR) |= (RCC_APB2ENR_IOPAEN);
         break;
     case 'B':
         GPIO_base = (GPIOB);
-        REGISTER(RCC_BASE|RCC_APB2ENR) |= (RCC_APB2ENR_IOPBEN);
+        // REGISTER(RCC_BASE|RCC_APB2ENR) |= (RCC_APB2ENR_IOPBEN);
         break;
     case 'C':
         GPIO_base = (GPIOC);
-        REGISTER(RCC_BASE|RCC_APB2ENR) |= (RCC_APB2ENR_IOPCEN);
+        // REGISTER(RCC_BASE|RCC_APB2ENR) |= (RCC_APB2ENR_IOPCEN);
         break;
     default:
-        ///TODO:
-        return -1;
-
-
+        ///TODO: debug_info
+        return -2;
     }
+
     return (REGISTER(GPIO_base + GPIOx_IDR))>>pin;
 }
 /*#######################################################
@@ -145,10 +125,6 @@ enum mode {
     AF_OPEN_DRAIN_OUTPUT_10MHZ=0xD,
     AF_OPEN_DRAIN_OUTPUT_50MHZ=0xF,
 };
-
-
-
-
 
 
 

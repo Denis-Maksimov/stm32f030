@@ -39,12 +39,12 @@ struct TIMx_chx
 
 
 //void TIM5_init(uint16_t prescaller,uint16_t array);
-void TIM5_init(uint32_t mode, void* settings);
-void TIM5_time_base_unit(uint16_t prescaller,uint16_t array);
-void TIM5_encoder_interface_mode(struct Encoder_mode_settings* cfg);
+stm32_api void TIM5_init(uint32_t mode, void* settings);
+stm32_api void TIM5_time_base_unit(uint16_t prescaller,uint16_t array);
+stm32_api void TIM5_encoder_interface_mode(struct Encoder_mode_settings* cfg);
 // void TIM5_PWM_output_mode();
-void PWM_output_mode(struct TIMx_chx* ret_handle,uint8_t pin, uint8_t port);
-void PWM_setup(struct TIMx_chx* tim, u16 T_us, u16 duty_cycle);
+stm32_api void PWM_output_mode(struct TIMx_chx* ret_handle,uint8_t pin, uint8_t port);
+stm32_api void PWM_setup(struct TIMx_chx* tim, u16 T_us, u16 duty_cycle);
 /** Examples:
 
 void example(){

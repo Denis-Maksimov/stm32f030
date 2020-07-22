@@ -2,9 +2,9 @@
 #define MY_DEBUG
 
 #include "stm32.h"
-#include "USART.h"
+
 
 //выводит на экран 4 байта
-void debug(int adress);
-void print(int digit);
+stm32_api void debug(int adress);
+stm32_api void print(int digit);
 #endif // !MY_DEBUG

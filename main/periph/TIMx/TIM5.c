@@ -103,8 +103,8 @@ void PWM_setup(struct TIMx_chx* tim, u16 T_us, u16 duty_cycle)
         return;
     }
     REGISTER(tim->TIMx+TIMx_CNT)=0;
-    REGISTER(tim->TIMx+TIMx_ARR)=T_us;  //период счёта
-    REGISTER(tim->TIMx+TIMx_CCRx(tim->ch))=duty_cycle;  //коэффициент заполнения
+    REGISTER(tim->TIMx+TIMx_ARR)=0xFFFF&T_us;  //период счёта
+    REGISTER(tim->TIMx+TIMx_CCRx(tim->ch))=0xFFFF&duty_cycle;  //коэффициент заполнения
     REGISTER(tim->TIMx+TIMx_CR1)|=TIMx_CR1_CEN;
 }
 /**

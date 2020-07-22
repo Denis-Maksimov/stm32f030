@@ -122,12 +122,15 @@
         }
         
     }
-    ///TODO: FLASH
+    //---Flash---
+    REGISTER(FLASH_base|FLASH_ACR) &= ~(FLASH_ACR_LATENCY(0x03));
+  	REGISTER(FLASH_base|FLASH_ACR) |=  FLASH_ACR_LATENCY(LATENCY_0);
+    REGISTER(FLASH_base|FLASH_ACR) &= ~(FLASH_ACR_PRFTBE);
 
     //Перечекаемся на внутренний кварц
     REGISTER(RCC_BASE|RCC_CFGR) &= ~(RCC_CFGR_SW_PLL|RCC_CFGR_SW_HSE);
     while ((REGISTER(RCC_BASE|RCC_CFGR) & (RCC_CFGR_SWS_PLL|RCC_CFGR_SWS_HSE)));
-
+    __system_clock = 8000000;
  }
 //-----------------------------------------------------------------
 

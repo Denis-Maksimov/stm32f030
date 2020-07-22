@@ -4,13 +4,13 @@
 // #define FLASH_ACR 0x40022000
 
 // устанавливает внешнее тактирование 72 МГц
-void set_clock_HSE();
+stm32_api void set_clock_HSE();
 
 // устанавливает внутреннее тактирование 8 МГц
-void set_clock_HSI();
+stm32_api void set_clock_HSI();
 
 // сброс RCC
-void RCC_reset(void);
+stm32_api void RCC_reset(void);
 
 
 

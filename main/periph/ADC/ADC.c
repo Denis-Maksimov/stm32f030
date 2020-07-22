@@ -1,16 +1,15 @@
 #include "ADC.h"
 
-void ADC_init(void){
+void ADC_init(uint8_t pin, uint8_t port)
+{
+    //TODO: очень сыро
     //Даёшь тактирование!
     REGISTER(RCC_BASE|RCC_APB2ENR) |= RCC_APB2ENR_ADC1EN;
 
     //Настройка пинов
-    pin_init(0,'A',ANALOG_INPUT);
-    pin_init(1,'A',ANALOG_INPUT);
-//    GPIOval* GPIO_a=(GPIOval*)(GPIOA|GPIOx_CRL); //GPIOC low's pins select
-        
-//        GPIO_a->pin0=ANALOG_INPUT;
-//        GPIO_a->pin1=ANALOG_INPUT;
+    pin_init(pin,port,ANALOG_INPUT);
+    // pin_init(1,'A',ANALOG_INPUT);
+
     //конфигрирование АЦП
         //калибровка
         REGISTER(ADC1_BASE|ADC_CR2)|=ADC_CR2_CAL;
@@ -41,11 +40,11 @@ void ADC_start_conversion(void){
     REGISTER(ADC1_BASE|ADC_CR2)|=(ADC_CR2_SWSTART|ADC_CR2_adcON);
     return;
 }
-void ADC_read(void){
-    char baf[11]={0};
-    u_intToStr((REGISTER(ADC1_BASE|ADC_DR)),baf);
-    USART_sendString(baf);
-    return ;
+u32 ADC_read(void){
+    // // char baf[11]={0};
+    // // u_intToStr(),baf);
+    // // USART_sendString(baf);
+    return REGISTER(ADC1_BASE|ADC_DR);
 }
 
 /*#######################################################

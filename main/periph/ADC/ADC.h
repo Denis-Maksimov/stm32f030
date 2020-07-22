@@ -1,4 +1,6 @@
-#pragma once
+#ifndef ADC_H
+#define ADC_H
+
 #include "stm32.h"
 #include "GPIO.h"
 #include "USART.h"
@@ -112,6 +114,8 @@ typedef union tagSQRx{
 
 
 
-void ADC_init(void);
-void ADC_start_conversion(void);
-void ADC_read(void);
+stm32_api void ADC_init(uint8_t pin, uint8_t port);
+stm32_api void ADC_start_conversion(void);
+stm32_api u32 ADC_read(void);
+
+#endif //!ADC_H

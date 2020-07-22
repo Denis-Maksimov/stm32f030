@@ -51,7 +51,7 @@ uint32_t reverse_32(uint32_t data){
 }
 
 uint32_t crc32_ether(char *buf, int len, int clear){
-
+    
     uint32_t* p = (uint32_t*) buf;
     uint32_t  crc, crc_reg;
 
@@ -94,3 +94,4 @@ uint32_t crc32_ether(char *buf, int len, int clear){
     return ~crc;
 
 }
+

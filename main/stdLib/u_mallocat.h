@@ -2,11 +2,12 @@
 #define U_MALLOC_H
 
 #include "u_stddef.h"
+
 #ifndef U_STDDEF_H
 #warning "Using <stddef.h>"
 #include <stddef.h>
 #endif // !U_STDDEF_H
-
+#define STDLIB_API  extern
 /** **************************************************************
  * @autor: dn.maksimow@gmail.com
  * 
@@ -32,16 +33,16 @@
 #define MY_HEAP_SIZE 1024
 // #define DEBUG
 
-extern void* u_memset(void *__s, unsigned char __c, size_t __n);
+STDLIB_API void* u_memset(void *__s, unsigned char __c, size_t __n);
 
-extern void* u_memcpy(void *__dest, const void *__src, size_t __n);
+STDLIB_API void* u_memcpy(void *__dest, const void *__src, size_t __n);
 
-extern void* u_malloc(size_t n_bytes);
+STDLIB_API void* u_malloc(size_t n_bytes);
 
-extern void u_free(void* ptr);
-
-
+STDLIB_API void u_free(void* ptr);
 
 
 
+
+#undef STDLIB_API
 #endif // !U_MALLOC_H

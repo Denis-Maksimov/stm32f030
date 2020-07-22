@@ -30,51 +30,27 @@ enum pin_mode {
 };
 
 
-//#define x (0b1101);
-
-
-// typedef union tagGPIOval{
-// 	struct {
-//    		enum pin_mode pin0:4;
-//    		enum pin_mode pin1:4;
-//    		enum pin_mode pin2:4;
-//         enum pin_mode pin3:4;
-
-//    		enum pin_mode pin4:4;
-//         enum pin_mode pin5:4;
-//    		enum pin_mode pin6:4;
-//         enum pin_mode pin7:4;
-// 	};
-
-// 	struct {
-//        	enum pin_mode pin8:4;
-//         enum pin_mode pin9:4;
-//    	    enum pin_mode pin10:4;
-//        	enum pin_mode pin11:4;
-
-//         enum pin_mode pin12:4;
-//    	    enum pin_mode pin13:4;
-//        	enum pin_mode pin14:4;
-//        	enum pin_mode pin15:4;
-//    	};
-// }GPIOval;
+/**
+ * @brief  'auto' setup pin
+ * @note   
+ * @param  pin:     pin number
+ * @param  port:    character of port 'A', 'B' or 'C'
+ * @param  mode:    enum definition of mode pin
+ * @retval None
+ */
+stm32_api void pin_init(uint8_t pin, uint8_t port, enum pin_mode mode);
 
 //--------------------------------------------------------
 
-//Настройка пинов old manual verse
-void GPIO_init(void); 
 
-//--------------------------------------------------------
-
-//'auto' setup pin
-/// \arg 
-///    @pin:  - pin number
-///    @port: - character of port 'A', 'B' or 'C'
-///    @mode: - enum definition of mode pin
-void pin_init(uint8_t pin, uint8_t port, enum pin_mode mode);
-
-//--------------------------------------------------------
-int digital_read(uint8_t pin, uint8_t port);
+/**
+ * @brief  Чтение дискретного входа как на "Ардуино"
+ * @note   ошибка на неверный порт и пин
+ * @param  pin: 
+ * @param  port: 
+ * @retval 1 или 0 если ok; -2 неверный порт, -1 неверный пин
+ */
+stm32_api int digital_read(uint8_t pin, uint8_t port);
 //--------------------------------------------------------
 
 #endif // !GPIO_H

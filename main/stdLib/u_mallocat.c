@@ -1,15 +1,5 @@
-// #include <stdlib.h>
-// #include <string.h>
 #include "u_mallocat.h"
 
-
-
-// //-------------
-// struct Array{
-//     size_t n;
-//     void* data;
-// };
-// //-------------
 
 struct chain
 {
