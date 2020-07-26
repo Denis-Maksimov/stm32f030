@@ -13,7 +13,9 @@
 #include "Sys_os.h"
 
 
-void SysTick_init(int period);
+void SysTick_set_clock(void);
+void SysTick_init(void);
+
 
 
 

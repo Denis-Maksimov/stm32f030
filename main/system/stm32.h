@@ -298,7 +298,7 @@
     #define SysTick_CTRL 0x00
         #define SysTick_ENABLE 0x0001
         #define SysTick_TICKINT 0x02 // SysTick разрешение запроса на исключение
-        #define SysTick_CLKSOURCE 0x04 // Clock source selection - AHB/8 or AHB
+        #define SysTick_CLKSOURCE 0x04 // Clock source selection - 0: AHB/8  1:AHB
         #define SysTick_COUNTFLAG 0x00010000 // доходил до нуля?
     #define SysTick_LOAD 0x04 //со скольки считать
     #define SysTick_VAL 0x08 // текущее значение

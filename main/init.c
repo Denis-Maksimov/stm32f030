@@ -28,12 +28,13 @@ void init(void){
     RCC_reset();
     USART_init(USART_buffer,256);		//Настройка USART
     
-    PWM_output_mode(&handl,1,'A');
-    PWM_setup(&handl, 1000, 500);
-    GPIO_init(); 		//Настройка пинов
-    set_clock_HSE(); // arbeitung--???
-    NVIC_init();
-    SysTick_init(72);//100 000
+    PWM_output_mode(&handl,1,'A');  // Настройка ШИМ
+    PWM_setup(&handl, 1000, 500);   // Настройка ШИМ
+    
+    GPIO_init(); 		// Настройка пинов
+    set_clock_HSE();    // установка 72 МГц
+    NVIC_init();        // включение пользовательских прерываний
+    SysTick_init();     // запуск часов
 
 
 }

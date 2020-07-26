@@ -1,5 +1,6 @@
 
 #include "RCC.h"
+#include "Sys_mgr.h" //для синхронизации systick системных часов
 /*************************************************************************************************
  * 
  * 
@@ -104,34 +105,36 @@
     REGISTER(RCC_BASE|RCC_CFGR) |= RCC_CFGR_SW_PLL;
     while (!(REGISTER(RCC_BASE|RCC_CFGR) & RCC_CFGR_SWS_PLL));
     __system_clock = 72000000;
+    SysTick_set_clock();
 
  }
 
 //-----------------------------------------------------------------
+//TODO: троттлинг должен отключать перифирию
+void set_clock_HSI()
+{ 
+    //Если внутренний кварц отключен
+  if(!(REGISTER(RCC_BASE|RCC_CR) & RCC_CR_HSIRDY))
+  {
+      //включаем
+      REGISTER(RCC_BASE|RCC_CR) |= RCC_CR_HSION;
+      while (!(REGISTER(RCC_BASE|RCC_CR) & RCC_CR_HSIRDY))
+      {
+          asm("nop");
+      }
+      
+  }
+  //---Flash---
+  REGISTER(FLASH_base|FLASH_ACR) &= ~(FLASH_ACR_LATENCY(0x03));
+  REGISTER(FLASH_base|FLASH_ACR) |=  FLASH_ACR_LATENCY(LATENCY_0);
+  REGISTER(FLASH_base|FLASH_ACR) &= ~(FLASH_ACR_PRFTBE);
 
- void set_clock_HSI()
- {
-     //Если внутренний кварц отключен
-    if(!(REGISTER(RCC_BASE|RCC_CR) & RCC_CR_HSIRDY))
-    {
-        //включаем
-        REGISTER(RCC_BASE|RCC_CR) |= RCC_CR_HSION;
-        while (!(REGISTER(RCC_BASE|RCC_CR) & RCC_CR_HSIRDY))
-        {
-            asm("nop");
-        }
-        
-    }
-    //---Flash---
-    REGISTER(FLASH_base|FLASH_ACR) &= ~(FLASH_ACR_LATENCY(0x03));
-  	REGISTER(FLASH_base|FLASH_ACR) |=  FLASH_ACR_LATENCY(LATENCY_0);
-    REGISTER(FLASH_base|FLASH_ACR) &= ~(FLASH_ACR_PRFTBE);
-
-    //Перечекаемся на внутренний кварц
-    REGISTER(RCC_BASE|RCC_CFGR) &= ~(RCC_CFGR_SW_PLL|RCC_CFGR_SW_HSE);
-    while ((REGISTER(RCC_BASE|RCC_CFGR) & (RCC_CFGR_SWS_PLL|RCC_CFGR_SWS_HSE)));
-    __system_clock = 8000000;
- }
+  //Перечекаемся на внутренний кварц
+  REGISTER(RCC_BASE|RCC_CFGR) &= ~(RCC_CFGR_SW_PLL|RCC_CFGR_SW_HSE);
+  while ((REGISTER(RCC_BASE|RCC_CFGR) & (RCC_CFGR_SWS_PLL|RCC_CFGR_SWS_HSE)));
+  __system_clock = 8000000;
+  SysTick_set_clock();
+}
 //-----------------------------------------------------------------
 
 /******************************************************************
@@ -161,5 +164,6 @@ void RCC_reset(void)
   /* Reset CFGR2 register */
   REGISTER(RCC_BASE|RCC_CFGR2) = (uint32_t)0x00000000;
 
-
+  __system_clock = 8000000;
+    SysTick_set_clock();
 }

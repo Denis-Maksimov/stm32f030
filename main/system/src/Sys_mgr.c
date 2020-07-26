@@ -1,15 +1,17 @@
 #include "Sys_mgr.h"
 #include "debug.h"
 //-----------------------------------------------------------------------
-
+void SysTick_set_clock(void){
+    REGISTER(SysTick_BASE|SysTick_LOAD)=__system_clock/1000;
+}
 
 //-----------------------------------------------------------------------
 
-void SysTick_init(int period){
-    ///TODO: check sys clock
+void SysTick_init(void)
+{
 
-    REGISTER(SysTick_BASE|SysTick_LOAD)=period;
-    REGISTER(SysTick_BASE|SysTick_CTRL)=SysTick_ENABLE|SysTick_TICKINT;
+    SysTick_set_clock();
+    REGISTER(SysTick_BASE|SysTick_CTRL)=SysTick_ENABLE|SysTick_TICKINT|SysTick_CLKSOURCE;
    // asm("cpsie i");
 
 }
@@ -220,9 +222,18 @@ void thread_kill( )
 
 void yield()
 {
-    __asm__ volatile (
-        "svc 0x00"
-    );
+    // __asm__ volatile (
+    //     "svc 0x00"
+    // );
+    __asm__ volatile( "cpsid i" );
+    __asm__ volatile( "cpsid f" );
+    //-- return to PendSV --
+	REGISTER(SCB_Base+SCB_ICSR)|=SCB_ICSR_PENDSVSET;
+
+    __asm__ volatile( "dsb" ); // Data synchronization barrier
+    __asm__ volatile( "isb" );  // Instruction synchronization barrier
+    __asm__ volatile( "cpsie f" );
+    __asm__ volatile( "cpsie i" );
 }
 
 void task_mgr( )
@@ -237,14 +248,18 @@ void os_delay(uint32_t cycles)
     for(volatile uint32_t i=0;i<cycles;i++)
     {   
   
-        asm volatile ("wfi");
+        yield();
     }
 
 }
 
+//-----------------------------------------
+
+
 void os_sleep_ms(uint32_t time)
 {
-    time =time* 100;
+
+
     uint32_t start_time=sys_tasks.ticks;
 
     while(sys_tasks.ticks-start_time<time)

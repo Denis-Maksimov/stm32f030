@@ -88,7 +88,8 @@ void task1()
     // os_delay(y[x]);
     // puts("\r\nyeah, baby! its work!!");
     // write_DMA_USART(USART_buffer, 20);
-    os_sleep_ms(1000);
+    os_delay(1000);
+    // os_sleep_ms(1000);
 //    asm volatile("wfi");
   }
 }
@@ -112,10 +113,10 @@ void main(){
 
 	while(1){
 
-        // puts("\r\nticks: ");
-        // print(sys_tasks.ticks);
+        puts("\r\nticks: ");
+        print(sys_tasks.ticks);
           		
-        os_delay(19);
+        os_sleep_ms(500);
         //asm("wfi");
         }
 
