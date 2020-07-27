@@ -1,9 +1,10 @@
 #include "i2c.h"
 #include "GPIO.h"
-#define OWN_ADDRES 0x46
+#define OWN_ADDRES 0x27<<1
 
-void i2c_init(void){
-	int periph_clock = 8;  // Тактирование перефирии i2c
+void i2c_init(void)
+{
+	int periph_clock = 72;  // Тактирование перефирии i2c
 	int freq_SCL = 100;    // частота частоты синхроимпульсов SCL i2c в кГц
 
 
@@ -17,7 +18,8 @@ void i2c_init(void){
     //-- i2c
         //настраиваем модуль в режим I2C
         REGISTER(I2C1|I2C_CR1)&= ~I2C_CR1_SMBUS;
-
+		REGISTER(I2C1|I2C_CR1)|=I2C_CR1_ACK|I2C_CR1_SMBTYPE;
+		
 	
     //-- указываем частоту тактирования модуля
         REGISTER(I2C1|I2C_CR2) &= ~I2C_CR2_FREQ(0b111111); //clear mask
@@ -49,7 +51,7 @@ void i2c_init(void){
 }
 
 //------------------------------------------------
-
+#include "USART.h"
 void I2C_Write(uint8_t _addr, uint8_t* data, uint8_t __n)
 {
 	//--- формируем бит-сигнал "старт"
@@ -57,27 +59,31 @@ void I2C_Write(uint8_t _addr, uint8_t* data, uint8_t __n)
 		
 		while(!(REGISTER(I2C1|I2C_SR1) & I2C_SR1_SB)); //тупим пока отправится
 		REGISTER(I2C1|I2C_SR1)=0;					   //clear status
+		// puts("start ok");
 
     //--- передаем адрес устройства
 	REGISTER(I2C1|I2C_DR) = _addr;
-		while(!(REGISTER(I2C1|I2C_SR1) & I2C_SR1_ADDR));
-		REGISTER(I2C1|I2C_SR1)=0;	//(void) I2C2->SR1;
-		REGISTER(I2C1|I2C_SR2)=0;	//(void) I2C2->SR2;
-
+		while(!(REGISTER(I2C1|I2C_SR1) & I2C_SR1_TxE));
+		REGISTER(I2C1|I2C_SR1)&=0;	//(void) I2C2->SR1;
+		REGISTER(I2C1|I2C_SR2)&=0;	//(void) I2C2->SR2;
+		// puts("addr ok");
     // //--- передаем адрес регистра
 	// REGISTER(I2C1|I2C_DR) = (uint32_t)reg_addr;	
 	// 	while(!(REGISTER(I2C1|I2C_SR1)& I2C_SR1_TxE));	
 			
-    //--- пишем данные	
+    //--- записываем данные	
 	for (int i = 0; i < __n; i++)
 	{
 		REGISTER(I2C1|I2C_DR) = data[i];					// отослали в регистр
-		while(!(REGISTER(I2C1|I2C_SR1) & I2C_SR1_BTF));	// подождали отправки байта
+		while((REGISTER(I2C1|I2C_SR1) & I2C_SR1_BTF));	// подождали отправки байта
+		REGISTER(I2C1|I2C_SR1)&=0;
+		// 
 	}
 	
 		//стоп бит
 	REGISTER(I2C1|I2C_CR1) |= I2C_CR1_STOP;		
-
+	REGISTER(I2C1|I2C_SR1)=0;
+	puts("byte ok");
 }
 /*
 uint8_t I2C_Read(uint8_t reg_addr)

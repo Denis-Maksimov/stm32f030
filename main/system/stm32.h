@@ -689,20 +689,20 @@
     #define I2C1  0x40005400
     #define I2C2  0x40005800
     #define I2C_CR1    0x00
-        #define I2C_CR1_PE          (0x01<<0)
+        #define I2C_CR1_PE          (0x01<<0)   // Peripheral enable
         #define I2C_CR1_SMBUS       (0x01<<1)   // 1-SMBus mode; 0-I2C mode
-        #define I2C_CR1_SMBTYPE     (0x01<<3)
-        #define I2C_CR1_ENARP       (0x01<<4)
-        #define I2C_CR1_ENPEC       (0x01<<5)
-        #define I2C_CR1_ENGC        (0x01<<6)
-        #define I2C_CR1_NOSTRETCH   (0x01<<7)
-        #define I2C_CR1_START       (0x01<<8)
-        #define I2C_CR1_STOP        (0x01<<9)
-        #define I2C_CR1_ACK         (0x01<<10)
-        #define I2C_CR1_POS         (0x01<<11)
-        #define I2C_CR1_PEC         (0x01<<12)
-        #define I2C_CR1_ALERT       (0x01<<13)
-        #define I2C_CR1_SWRST       (0x01<<15)
+        #define I2C_CR1_SMBTYPE     (0x01<<3)   // 0: SMBus Device 1: SMBus Host
+        #define I2C_CR1_ENARP       (0x01<<4)   // ARP enable
+        #define I2C_CR1_ENPEC       (0x01<<5)   // PEC calculation enable
+        #define I2C_CR1_ENGC        (0x01<<6)   // General call enable
+        #define I2C_CR1_NOSTRETCH   (0x01<<7)   // Clock stretching disable (Slave mode)
+        #define I2C_CR1_START       (0x01<<8)   // Repeated start generation
+        #define I2C_CR1_STOP        (0x01<<9)   // Stop generation after the current byte transfer or after the current Start condition is sent.
+        #define I2C_CR1_ACK         (0x01<<10)  // Acknowledge returned after a byte is received (matched address or data)
+        #define I2C_CR1_POS         (0x01<<11)  // Acknowledge/PEC Position (for data reception)
+        #define I2C_CR1_PEC         (0x01<<12)  // Packet error checking
+        #define I2C_CR1_ALERT       (0x01<<13)  // SMBus alert
+        #define I2C_CR1_SWRST       (0x01<<15)  // I2C Peripheral under reset state
 
     #define I2C_CR2    0x04
         #define I2C_CR2_FREQ(a)      ((0b111111&a)<<0) //The FREQ bits must be configured with the APB clock frequency value (I2C peripheral connected to APB). The FREQ field is used by the peripheral to generate data setup and hold times compliant with the I2C specifications. The minimum allowed frequency is 2 MHz, the maximum frequency is limited by the maximum APB frequency and cannot exceed 50 MHz (peripheral intrinsic maximum limit)
@@ -739,6 +739,7 @@
         #define I2C_SR1_SMBALERT    (0x01<<15)  //SMBus alert 
 
     #define I2C_SR2    0x18
+        #define I2C_SR2_BUSY        (0x01<<1)
     #define I2C_CCR    0x1c
         #define I2C_CCR_FS          0x8000
         #define I2C_CCR_DUTY        0x4000
