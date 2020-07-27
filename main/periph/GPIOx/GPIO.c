@@ -1,5 +1,5 @@
 #include "GPIO.h"
-
+#include "bitbanding.h"
 
 void pin_init(uint8_t pin, uint8_t port, enum pin_mode mode){
     
@@ -58,32 +58,30 @@ void pin_init(uint8_t pin, uint8_t port, enum pin_mode mode){
     return;
 }
 
+
+u32 get_port(uint8_t port){
+    if (port=='a'||port=='A')return GPIOA;
+    if (port=='b'||port=='B')return GPIOB;
+    if (port=='c'||port=='C')return GPIOC;
+    return 0;
+}
+
 int digital_read(uint8_t pin, uint8_t port){
     //-- sellect port & base --
-    volatile uint32_t GPIO_base=0;
+    volatile uint32_t GPIO_base=get_port(port);
 
     if(pin>15)return -1;
-    switch (port)
-    {
     
-    case 'A':
-        GPIO_base = (GPIOA);
-        // REGISTER(RCC_BASE|RCC_APB2ENR) |= (RCC_APB2ENR_IOPAEN);
-        break;
-    case 'B':
-        GPIO_base = (GPIOB);
-        // REGISTER(RCC_BASE|RCC_APB2ENR) |= (RCC_APB2ENR_IOPBEN);
-        break;
-    case 'C':
-        GPIO_base = (GPIOC);
-        // REGISTER(RCC_BASE|RCC_APB2ENR) |= (RCC_APB2ENR_IOPCEN);
-        break;
-    default:
-        ///TODO: debug_info
-        return -2;
-    }
+    
+    return BIT_BAND_PER(GPIO_base + GPIOx_IDR,pin);
+}
+void digital_write(uint8_t pin, uint8_t port,u8 state){
+    //-- sellect port & base --
+    volatile uint32_t GPIO_base=get_port(port);
 
-    return (REGISTER(GPIO_base + GPIOx_IDR))>>pin;
+    if(pin>15)return;
+    
+    BIT_BAND_PER(GPIO_base + GPIOx_ODR,pin)=state;
 }
 /*#######################################################
 *************  шпаргалка по настройке  ******************

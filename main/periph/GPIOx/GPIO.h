@@ -51,6 +51,7 @@ stm32_api void pin_init(uint8_t pin, uint8_t port, enum pin_mode mode);
  * @retval 1 или 0 если ok; -2 неверный порт, -1 неверный пин
  */
 stm32_api int digital_read(uint8_t pin, uint8_t port);
+stm32_api void digital_write(uint8_t pin, uint8_t port,u8 state);
 //--------------------------------------------------------
 
 #endif // !GPIO_H

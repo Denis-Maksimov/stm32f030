@@ -84,11 +84,15 @@ void task1()
 {
   while(1)
   {
-    REGISTER(GPIOC|GPIOx_ODR) ^= (1<<13);
+    // REGISTER(GPIOC|GPIOx_ODR) ^= (1<<13);
+    digital_write(13,'C',0);
+
     // os_delay(y[x]);
     // puts("\r\nyeah, baby! its work!!");
     // write_DMA_USART(USART_buffer, 20);
-    os_delay(1000);
+    os_sleep_ms(900);
+    digital_write(13,'C',1);
+    os_sleep_ms(100);
     // os_sleep_ms(1000);
 //    asm volatile("wfi");
   }

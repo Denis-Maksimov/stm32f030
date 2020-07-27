@@ -265,7 +265,8 @@ void os_sleep_ms(uint32_t time)
     while(sys_tasks.ticks-start_time<time)
     {   
   
-        asm volatile ("wfi");
+        // asm volatile ("wfi");
+        yield();
     }
 
 }
