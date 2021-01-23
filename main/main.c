@@ -3,6 +3,7 @@
 #include "ssd1306.h"
 #include "stdlib.h"
 #include "Sys_os.h"
+// #include <float.h>
 /*
 
              | |s|s| |
@@ -68,7 +69,6 @@ void main_switcher(){
   
   while(1)
   {     
-
          
         //  PWM_setup(&handl, y[x], (y[x])>>2);
         //  os_sleep_ms(y1[x]);
@@ -100,12 +100,13 @@ void task1()
 }
 
 //------------------------------------
-
+#include "ssd1306.h"
 void main(){
         asm volatile ("cpsid i");
         asm volatile ("cpsid f");
         init();
-//        ssd1306init();
+       ssd1306init();
+       ssd1306fill();
         USART_buffer[0]='X';
         USART_buffer[19]='Z';
         // pin_init(15,'C',HI_Z_INPUT);

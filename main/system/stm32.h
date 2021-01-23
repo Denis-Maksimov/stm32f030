@@ -1,5 +1,6 @@
 #ifndef STM32_H
 #define STM32_H
+#include "u_stddef.h"
 
 /******************************************************************
 **  Reset and clock control (RCC) Register
@@ -599,7 +600,7 @@
         #define USART_SR_NE         0x04    //Noise is detected on a received frame
         #define USART_SR_ORE        0x08    //Owerrun error.This bit is set by hardware when the word currently being received in the shift register is ready to be transferred into the RDR register while RXNE=1
         #define USART_SR_IDLE       0x10    //Idle Line is detected
-        #define USART_SR_RXNE       0x20    //content of the RDR shift register has been transferred to the USART_DR register
+        #define USART_SR_RXNE       0x20    //содержимое сдвигового регистра RDR перенесено в регистр USART_DR
         #define USART_SR_TC         0x40    //transmission of a frame containing data is complete and if TXE is set
         #define USART_SR_TXE        0x80    //content of the TDR register has been transferred into the shift register
         #define USART_SR_LBD        0x100   //LIN break is detected
@@ -789,17 +790,17 @@
         #define DMA_ISR_HTIF(a) (0b0100<<a) // Channel x half transfer flag
         #define DMA_ISR_TEIF(a) (0b1000<<a) // Channel x transfer error flag
 
-    #define DMA_IFCR            0x04
-        #define DMA_IFCR_CGIF(a)  (0b0001<<a)
-        #define DMA_IFCR_CTCIF(ch_num) (0b0010<ch_num)
-        #define DMA_IFCR_CHTIF(a) (0b0100<<a)
-        #define DMA_IFCR_CTEIF(a) (0b1000<<a)
+    #define DMA_IFCR            0x04        //DMA interrupt flag clear register 
+        #define DMA_IFCR_CGIF(a)  (0b0001<<a)           //Channel x global interrupt clear
+        #define DMA_IFCR_CTCIF(ch_num) (0b0010<ch_num)  //Channel x transfer complete clear 
+        #define DMA_IFCR_CHTIF(a) (0b0100<<a)           //Channel x half transfer clear
+        #define DMA_IFCR_CTEIF(a) (0b1000<<a)           //Channel x transfer error clear
 
 
-    #define DMA_CCR1            0x08
-    #define DMA_CNDTR1          0x0C
-    #define DMA_CPAR1           0x10
-    #define DMA_CMAR1           0x14
+    #define DMA_CCR1            0x08    //DMA channel 1 configuration register 
+    #define DMA_CNDTR1          0x0C    //DMA channel 1 number of data to transfer register
+    #define DMA_CPAR1           0x10    //DMA channel 1 peripheral address register !!!This register must not be written when the channel is enabled 
+    #define DMA_CMAR1           0x14    //DMA channel x memory address register
 
     #define DMA_CCR2            0x1c
     #define DMA_CNDTR2          0x20
@@ -838,8 +839,8 @@
     #define DMA_CCRx_TEIE   (0X01<<3) //Transfer error interrupt enable
     #define DMA_CCRx_DIR    (0X01<<4) //Data transfer direction 0: Read from peripheral 1: Read from memory
     #define DMA_CCRx_CIRC   (0X01<<5) //Circular mode
-    #define DMA_CCRx_PINC   (0X01<<6)
-    #define DMA_CCRx_MINC   (0X01<<7)
+    #define DMA_CCRx_PINC   (0X01<<6) //Peripheral increment mode
+    #define DMA_CCRx_MINC   (0X01<<7) //Memory increment mode
     #define DMA_CCRx_PSIZE(a)   ((0b11&(a))<<8)
         #define PSIZE_8b     (0b00)
         #define PSIZE_16b    (0b01)
@@ -888,6 +889,85 @@
     #define ADC_SQR3            0x34
     #define ADC_SQR2            0x30
     #define ADC_SQR1            0x2C
+
+
+/******************************************************************
+**  USB device FS registers
+*******************************************************************
++ */
+        #define USB_BASE             0x40005C00
+        #define Shared_USB_CAN_SRAM  0x40006000
+
+        //-- Регистры конечных точек --
+        #define USB_EPxR(x)        (x*0x04)
+            #define USB_EPxR_CTR_RX     (0x01<<15) //: Correct Transfer for reception
+            #define USB_EPxR_DTOG_RX    (0x01<<14) //: Data Toggle, for reception transfers
+            #define USB_EPxR_STAT_RX(a) ((a&0b11)<<12)
+                #define STAT_RX_DISABLED    0b00    // all reception requests addressed to this endpoint are ignored
+                #define STAT_RX_STALL       0b01    //the endpoint is stalled and all reception requests result in a STALL handshake
+                #define STAT_RX_NAK         0b10    //the endpoint is naked and all reception requests result in a NAK handshake
+                #define STAT_RX_VALID       0b11    // this endpoint is enabled for reception.
+            #define USB_EPxR_SETUP      (0x01<<11)  //Setup transaction completed (r/o)
+            #define USB_EPxR_EP_TYPE(a) ((a&0b11)<<9)//
+                #define EP_TYPE_BULK         0b00
+                #define EP_TYPE_CONTROL      0b01
+                #define EP_TYPE_ISO          0b10
+                #define EP_TYPE_INTERRUPT    0b11
+
+            #define USB_EPxR_EP_KIND    (0x01<<8)   //Endpoint kind
+            #define USB_EPxR_CTR_TX     (0x01<<7)   //Correct Transfer for transmission
+            #define USB_EPxR_DTOG_TX    (0x01<<6)   //Data Toggle, for transmission transfers
+            #define USB_EPxR_STAT_TX(a) ((a&0b11)<<4)
+                #define STAT_TX_DISABLED    0b00    // all reception requests addressed to this endpoint are ignored
+                #define STAT_TX_STALL       0b01    //the endpoint is stalled and all reception requests result in a STALL handshake
+                #define STAT_TX_NAK         0b10    //the endpoint is naked and all reception requests result in a NAK handshake
+                #define STAT_TX_VALID       0b11    // this endpoint is en
+            #define USB_EPxR_EA         ((a&0b111)<<0) //Endpoint address
+
+        //USB control register 
+        #define USB_CNTR              0x40
+            #define USB_CNTR_CTRM    (0x01<<15) //Correct transfer interrupt mask
+            #define USB_CNTR_PMAOVRM (0x01<<14) //Packet memory area over / underrun interrupt mask
+            #define USB_CNTR_ERRM    (0x01<<13) //Error interrupt mask
+            #define USB_CNTR_WKUPM   (0x01<<12) //wake up interrupt mask
+            #define USB_CNTR_SUSPM   (0x01<<11) // Suspend mode interrupt mask
+            #define USB_CNTR_RESETM  (0x01<<10) //: USB reset interrupt mask
+            #define USB_CNTR_SOFM    (0x01<<9)  //: Start of frame interrupt mask
+            #define USB_CNTR_ESOFM   (0x01<<8)  //: Expected start of frame interrupt mask
+            #define USB_CNTR_RESUME  (0x01<<4)  //: Resume request
+            #define USB_CNTR_FSUSP   (0x01<<3)  //: Force suspend
+            #define USB_CNTR_LP_MODE (0x01<<2)  //: Low-power mode
+            #define USB_CNTR_PDWN    (0x01<<1)  //: Power down
+            #define USB_CNTR_FRES    (0x01<<0)  //: Force USB Reset
+
+        //USB interrupt status register 
+        #define USB_ISTR            0x44
+
+        //USB frame number register 
+        #define USB_FNR             0x48
+            #define USB_FNR_RXDP    (0x01<<15)// Receive data + line status
+            #define USB_FNR_RXDM    (0x01<<14)//: Receive data - line status
+            #define USB_FNR_LCK     (0x01<<13)//: Locked
+            #define USB_FNR_LSOF    (0x03<<11)//[1:0]: Lost SOF
+            #define USB_FNR_FN      (0x7ff)   // Frame number
+
+        //USB device address
+        #define USB_DADDR           0x4C
+            #define USB_DADDR_EF    (0x01<<7)
+            #define USB_DADDR_ADD(a)   (a&0b111111)
+        //Buffer table address
+        #define USB_BTABLE          0x50
+            #define USB_BTABLE_BTABLE(addr)  (addr<<3)
+
+        //--- Transmission buffer address n ---
+        #define w_USB_ADDRn_TX(n,buf_addr)     (REGISTER(USB_BASE+USB_BTABLE+n*16)=buf_addr<<1)
+        #define w_USB_COUNTn_TX(n,_byte)       (REGISTER(USB_BASE+USB_BTABLE+n*16+4)=_byte&0x3FF)
+        #define w_USB_ADDRn_RX(n,buf_addr)     (REGISTER(USB_BASE+USB_BTABLE+n*16+8)=buf_addr<<1)
+        #define r_USB_ADDRn_RX(n)              ((REGISTER(USB_BASE+USB_BTABLE+n*16+8))<<1)
+        #define _USB_COUNTn_RX(n)        (REGISTER(USB_BASE+USB_BTABLE+n*16+4))
+            // #define _USB_COUNTn_RX_COUNTn_RX
+            //TODO!!!
+        
 
 /******************************************************************
 **  USB (OTG_FS)
@@ -955,7 +1035,7 @@
 **  Others
 *******************************************************************
 + */
-#include "u_stddef.h"
+
 #define  stm32_api  extern
 
 unsigned int __system_clock; // <-- переменная для регистрации текущего значения частоты системы

@@ -11,8 +11,10 @@ CFLAGS += -Wall
 CFLAGS += -mcpu=cortex-m3 
 CFLAGS += -march=armv7-m
 CFLAGS += -mthumb
+CFLAGS += -fomit-frame-pointer
 CFLAGS += -O2
 CFLAGS += -D__MY_BARE_ARM__
+CFLAGS += -mfloat-abi=soft 
 #CFLAGS += -mfloat-abi=soft
 
 #includes dirs
@@ -42,7 +44,7 @@ bin: $(FILES)
 
 build.elf: bin boot.o
 		echo "- Линкуем"
-		arm-none-eabi-ld -o build.elf -T link.ld  *.o # -M 
+		arm-none-eabi-ld -o build.elf -T link.ld  *.o -L/usr/lib/gcc/arm-none-eabi/7.3.1/thumb/ -lgcc # -M 
 
 binary.bin: build.elf
 		echo "- Извлекаем голые бинарные данные"

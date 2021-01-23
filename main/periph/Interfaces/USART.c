@@ -80,14 +80,23 @@ void USART_DMA_recv_init(void* buffer, size_t buf_size)
 
     REGISTER(DMA1_BASE|DMA_CCR5) &=~ DMA_CCRx_EN;
     //-- general settings --
+
       //periph adr
       REGISTER(DMA1_BASE|DMA_CPAR5) = (USART1 + USART_DR); 
+
       //interrupt
       // REGISTER(DMA1_BASE|DMA_CCR4) |= DMA_CCRx_TCIE; 
+
       //MEM<-PERIPH
       REGISTER(DMA1_BASE|DMA_CCR5) &= ~(DMA_CCRx_DIR); 
+      
+      
       //CYCLiC
-      REGISTER(DMA1_BASE|DMA_CCR5) |= (DMA_CCRx_CIRC); 
+      REGISTER(DMA1_BASE|DMA_CCR5) 
+                |=      //ON
+                // &=~     //OFF
+                  (DMA_CCRx_CIRC);
+      
 
     //-- perph settings --
       //increment
@@ -111,7 +120,11 @@ void USART_DMA_recv_init(void* buffer, size_t buf_size)
     return;
 }
 //--------------------------------------------------------------
-
+size_t USART_DMA_get_pos(void)
+{
+    return REGISTER(DMA1_BASE+DMA_CNDTR5);
+}
+//--------------------------------------------------------------
 int write_DMA_USART(const char* buffer, uint16_t buf_size){
 
     //-- DMA employment check 

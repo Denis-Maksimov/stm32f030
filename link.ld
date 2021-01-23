@@ -29,6 +29,8 @@ SECTIONS
 
                 *(.text)
                 *(.text.*)
+                *(.glue_7)         /* glue arm to thumb code */
+                *(.glue_7t)        /* glue thumb to arm code */
                 *(.rodata)
                 *(.rodata.*)
  

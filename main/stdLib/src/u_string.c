@@ -169,9 +169,9 @@ char* u_strrchr(const char *__s, const char __c){
 /* Compare N characters of S1 and S2.  */
 size_t u_strncmp(const char* __str1, const char* __str2, size_t __n){
 
-	for(int i; i < __n; i++)
+	for(int i=0; i < __n; i++)
 	{
-		if(__str1[i]!=__str2[i])
+		if(__str1[i]!=__str2[i] || __str1[i]==0 || __str2[i]==0)
 		{
 			return (__str1[i] - __str2[i]);
 		}
@@ -310,6 +310,59 @@ void u_intToStr(unsigned int n, char* s)
 
 
 #endif
+
+/**
+ * isdigit
+ * tolower
+ * isspace
+ * isxdigit
+ * 
+ * */
+int u_isdigit(char ch)
+{
+    if(ch>='0'&&ch<='9')
+        return 1;
+    return 0;
+}
+int u_isxdigit(char ch)
+{
+    if(u_isdigit(ch)&&
+    ((ch<='F')&& (ch>='A'))&&
+    ((ch<='f')&& (ch>='a')))
+        return 1;
+    return 0;
+}
+
+int u_isupper(char ch)
+{
+    if(ch>='A'&&ch<='Z')
+        return 1;
+    return 0;
+}
+
+char u_tolower(char ch)
+{
+    if(u_isupper(ch))
+        return(ch+32);
+    return ch;
+}
+
+int u_isspace(char ch)
+{
+    switch (ch)
+    {
+    case ' ':
+    case '\t':
+    case '\n':
+    case '\r':
+       return 1;
+    default:
+        return 0;
+    }
+}
+
+
+
 /* Чёрная магия с просторов хабра, красиво, как по мне
 u8 CountOnes3 (u8 n) {
   if (n == 0)  return 0;  // Единственный случай, когда ответ 0.

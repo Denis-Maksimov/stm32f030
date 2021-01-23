@@ -1,5 +1,6 @@
 #include "Sys_mgr.h"
 #include "debug.h"
+#include "bitband.h"
 //-----------------------------------------------------------------------
 void SysTick_set_clock(void){
     REGISTER(SysTick_BASE|SysTick_LOAD)=__system_clock/1000;
@@ -30,7 +31,17 @@ void _RST(void){
 
 
 //--------------------------------------------------------------
+u32 _locked[1] = {0};
 
+//блокирует переключение потоков
+void u_lock(void){
+    BIT_BAND_SRAM(_locked, 0) = 1;
+}
+
+//разрешает переключение потоков
+void u_unlock(void){
+    BIT_BAND_SRAM(_locked, 0) = 0;
+}
 /********************************
  * Cyclic system interrupt
  * ******************************/
@@ -40,7 +51,7 @@ void SysTick_Handler(void){
     sys_tasks.ticks++;
     // REGISTER(GPIOC|GPIOx_ODR) ^= (1<<13);
     while (!(REGISTER(SysTick_BASE|SysTick_CTRL)&SysTick_COUNTFLAG));
-    
+    if(BIT_BAND_SRAM(&_locked, 0))return;
    
 
 	//-- return to PendSV --
@@ -52,6 +63,9 @@ void SysTick_Handler(void){
     return;
 }
 
+uint32_t u_clock(){
+    return sys_tasks.ticks;
+}
 //--------------------------------------------------------------
 extern uint32_t stack;
 
@@ -84,7 +98,7 @@ void PendSV_Handler(void)
     sys_tasks.task_attribs[sys_tasks.current_task]->hw_sp=(void*)_msp; 
     sys_tasks.task_attribs[sys_tasks.current_task]->sw_sp=(void*)_soft_sp; 
     //--!Save context
-  //  puts("saved\r\n");
+
     //-- switch task --
     (sys_tasks.current_task<sys_tasks.n_tasks-1)?
         (sys_tasks.current_task=sys_tasks.current_task+1):

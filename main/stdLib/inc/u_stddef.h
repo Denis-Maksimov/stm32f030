@@ -4,6 +4,8 @@
 #define REGISTER(a)     (*((volatile unsigned int *)(a)))
 #define true  ((unsigned)(1)) 
 #define false ((unsigned)(0)) 
+#define __IO    volatile
+
 typedef unsigned char uint8_t;
 typedef unsigned int uint32_t;
 typedef unsigned short uint16_t;

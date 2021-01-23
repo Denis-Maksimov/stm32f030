@@ -16,7 +16,7 @@
 void SysTick_set_clock(void);
 void SysTick_init(void);
 
-
+uint32_t u_clock();
 
 
 
@@ -51,10 +51,8 @@ void SysTick_init(void);
 // //----------------------------------------------------
 
 
-// void mutex_lock(void){
-//     ///TODO:
-// }
-
+void u_lock(void);
+void u_unlock(void);
 
 // //----------------------------------------------------
 
